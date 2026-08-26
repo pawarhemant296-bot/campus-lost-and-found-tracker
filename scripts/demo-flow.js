@@ -271,6 +271,19 @@ async function main() {
       finalNotifications.notifications.some((entry) => entry.type === 'HANDOVER_CONFIRMED'),
   );
 
+  // -- 9b. The website itself ------------------------------------------------
+  // Guard against the "API works but nobody built the UI" failure mode: on a
+  // fresh clone frontend/dist does not exist, and / would serve JSON.
+  step('9b', 'The web UI is built and served from the API port');
+  const homepage = await fetch(baseUrl);
+  const homepageBody = await homepage.text();
+  const servesHtml = homepage.ok && homepageBody.includes('<div id="root">');
+  check(
+    'GET / returns the React app',
+    servesHtml,
+    servesHtml ? '' : '-> run `npm run build` in the repository root',
+  );
+
   // -- 10. Dashboards -------------------------------------------------------
   step(10, 'Dashboards and admin analytics (spec section 12, phase 7)');
   const dashboard = await api('GET', '/items/dashboard', { token: ananya.token });

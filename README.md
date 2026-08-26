@@ -36,8 +36,11 @@ npm run dev:api        # Express on :4000 with auto-reload
 npm run dev:web        # Vite dev server on :5173 (proxies /api to :4000)
 ```
 
-`npm start` serves the **built** UI from the API port, so a single process is enough for the demo.
-Run `npm run build` after changing frontend code if you use that mode.
+`npm start` rebuilds the UI and serves it from the API port, so a single process is enough for the
+demo. Use `npm run start:api` to skip the rebuild.
+
+> If `http://localhost:4000` ever returns JSON instead of the website, the UI has not been built —
+> run `npm run build` in the repository root. `npm run demo` asserts this too.
 
 ### Full stack on PostgreSQL
 

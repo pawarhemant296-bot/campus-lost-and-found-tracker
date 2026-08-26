@@ -46,10 +46,11 @@ export function createApp() {
     });
   } else {
     app.get('/', (req, res) => {
-      res.json({
+      res.status(503).json({
         service: 'Lost & Found Item Tracker API',
-        docs: '/api/health',
-        note: 'Build the frontend (cd frontend && npm run build) to serve the UI from this port.',
+        api_health: '/api/health',
+        problem: 'The web UI has not been built yet, so there is nothing to serve on this port.',
+        fix: 'Run `npm run build` in the repository root (or `npm start`, which builds first), then reload this page.',
       });
     });
   }
