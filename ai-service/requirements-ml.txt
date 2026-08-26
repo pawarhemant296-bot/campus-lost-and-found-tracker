@@ -1,0 +1,5 @@
+# Optional upgrade: true semantic matching with sentence embeddings.
+# Large download (~500 MB with torch) - install only if you have time/bandwidth.
+# The service detects these automatically and switches from TF-IDF to embeddings.
+-r requirements.txt
+sentence-transformers==3.3.1

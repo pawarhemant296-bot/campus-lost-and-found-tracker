@@ -1,0 +1,31 @@
+# Builds the React UI and serves it from the Express API on a single port.
+# Build from the repository root:  docker build -f deploy/Dockerfile.api .
+
+# ---- stage 1: build the frontend ------------------------------------------
+FROM node:22-alpine AS web
+WORKDIR /app/frontend
+COPY frontend/package*.json ./
+RUN npm ci
+COPY frontend/ ./
+RUN npm run build
+
+# ---- stage 2: API runtime --------------------------------------------------
+FROM node:22-alpine AS api
+WORKDIR /app
+
+# better-sqlite3 needs a toolchain only while installing.
+RUN apk add --no-cache --virtual .build python3 make g++
+
+COPY backend/package*.json ./backend/
+RUN cd backend && npm ci --omit=dev && apk del .build
+
+COPY backend/ ./backend/
+COPY --from=web /app/frontend/dist ./frontend/dist
+
+ENV NODE_ENV=production
+ENV PORT=4000
+EXPOSE 4000
+
+# Migrations run automatically on boot (see backend/src/server.js).
+WORKDIR /app/backend
+CMD ["node", "src/server.js"]
