@@ -29,7 +29,7 @@ router.get(
       service: 'lost-found-tracker-api',
       version: '1.0.0',
       environment: config.env,
-      database: { client: db.client, reachable: dbOk },
+      database: { client: db.client, driver: db.driver, reachable: dbOk },
       realtime: { enabled: isRealtimeReady(), connected_clients: connectedUserCount() },
       ai_service: await aiHealth(),
       matching_weights: matchingWeights(),

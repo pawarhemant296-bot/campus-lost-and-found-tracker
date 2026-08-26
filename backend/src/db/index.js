@@ -44,25 +44,82 @@ function normalizeRow(row) {
   return out;
 }
 
+/**
+ * Picks a SQLite driver, preferring the fast native one but never requiring it.
+ *
+ *   better-sqlite3  - native module; needs a prebuilt binary or a C++ toolchain
+ *   node:sqlite     - built into Node (unflagged from 23.4; needs
+ *                     --experimental-sqlite on 22.x), so no compiler at all
+ *
+ * That fallback matters on Windows, where `npm install` frequently cannot build
+ * better-sqlite3. Set SQLITE_DRIVER=node|better to force one.
+ */
+function loadSqliteDriver() {
+  const preference = String(process.env.SQLITE_DRIVER ?? '').toLowerCase();
+  const order = preference === 'node' ? ['node'] : preference === 'better' ? ['better'] : ['better', 'node'];
+  const problems = [];
+
+  for (const candidate of order) {
+    try {
+      if (candidate === 'better') {
+        return { kind: 'better-sqlite3', Database: require('better-sqlite3') };
+      }
+      const { DatabaseSync } = require('node:sqlite');
+      return { kind: 'node:sqlite', Database: DatabaseSync };
+    } catch (error) {
+      problems.push(`  - ${candidate === 'better' ? 'better-sqlite3' : 'node:sqlite'}: ${error.message}`);
+    }
+  }
+
+  throw new Error(
+    [
+      'No SQLite driver is available.',
+      ...problems,
+      '',
+      'Pick any one of these fixes:',
+      '  1. Use Node.js 22 LTS or newer, then reinstall:  npm --prefix backend install',
+      '  2. Run on Node 22.x with the built-in driver:     node --experimental-sqlite src/server.js',
+      '  3. Use PostgreSQL instead:                        DB_CLIENT=postgres DATABASE_URL=...',
+      '  4. Skip local setup entirely:                     docker compose up --build',
+    ].join('\n'),
+  );
+}
+
 function createSqliteAdapter() {
-  const Database = require('better-sqlite3');
+  const { kind, Database } = loadSqliteDriver();
   fs.mkdirSync(path.dirname(config.db.sqliteFile), { recursive: true });
   const handle = new Database(config.db.sqliteFile);
-  handle.pragma('journal_mode = WAL');
-  handle.pragma('foreign_keys = ON');
+
+  if (kind === 'better-sqlite3') {
+    handle.pragma('journal_mode = WAL');
+    handle.pragma('foreign_keys = ON');
+  } else {
+    // node:sqlite enables foreign keys by default and exposes no pragma() helper.
+    handle.exec('PRAGMA journal_mode = WAL;');
+  }
+
+  /**
+   * better-sqlite3 tells us whether a statement returns rows; node:sqlite does
+   * not, so fall back to inspecting the SQL.
+   */
+  const returnsRows = (statement, sql) =>
+    kind === 'better-sqlite3'
+      ? statement.reader
+      : /^\s*(SELECT|WITH|PRAGMA)\b/i.test(sql) || /\bRETURNING\b/i.test(sql);
 
   const exec = (sql, params) => {
     const statement = handle.prepare(sql);
     const bound = normalizeParams(params);
-    if (statement.reader) {
+    if (returnsRows(statement, sql)) {
       return { rows: statement.all(...bound), changes: 0 };
     }
     const info = statement.run(...bound);
-    return { rows: [], changes: info.changes, lastInsertRowid: info.lastInsertRowid };
+    return { rows: [], changes: Number(info.changes ?? 0), lastInsertRowid: info.lastInsertRowid };
   };
 
   return {
     name: 'sqlite',
+    driver: kind,
     async query(sql, params) {
       return exec(sql, params);
     },
@@ -102,6 +159,7 @@ function createPostgresAdapter() {
 
   return {
     name: 'postgres',
+    driver: 'pg',
     async query(sql, params) {
       const result = await runner().query(toPositional(sql), normalizeParams(params));
       return { rows: (result.rows ?? []).map(normalizeRow), changes: result.rowCount ?? 0 };
@@ -135,8 +193,11 @@ function createPostgresAdapter() {
 const adapter = config.db.client === 'postgres' ? createPostgresAdapter() : createSqliteAdapter();
 
 export const db = {
-  /** Active driver name: 'sqlite' | 'postgres'. */
+  /** Active dialect: 'sqlite' | 'postgres'. */
   client: adapter.name,
+
+  /** Underlying driver: 'better-sqlite3' | 'node:sqlite' | 'pg'. */
+  driver: adapter.driver,
 
   /** Returns every matching row. */
   async all(sql, params = []) {

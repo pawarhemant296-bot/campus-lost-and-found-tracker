@@ -42,6 +42,37 @@ demo. Use `npm run start:api` to skip the rebuild.
 > If `http://localhost:4000` ever returns JSON instead of the website, the UI has not been built —
 > run `npm run build` in the repository root. `npm run demo` asserts this too.
 
+### Windows notes
+
+**`npm : File ...\npm.ps1 cannot be loaded because running scripts is disabled`**
+PowerShell blocks npm's script shim. Any one of these fixes it:
+
+```powershell
+# a) run the commands from Command Prompt (cmd) instead of PowerShell, or
+npm.cmd run setup          # b) call the .cmd shim directly, or
+Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned   # c) permanent, no admin needed
+```
+
+**`npm install` fails building `better-sqlite3`**
+That native module has no prebuilt binary for every Node version on Windows, and building it from
+source needs the Microsoft C++ toolchain. You do not need it: it is an **optional** dependency, and
+the app automatically falls back to Node's built-in `node:sqlite` driver. Just carry on —
+`npm run seed && npm start` will work. `GET /api/health` reports which driver is active.
+
+On Node 22.x the built-in driver needs a flag, so if you also skipped the native module use:
+
+```bash
+node --experimental-sqlite src/server.js     # from the backend/ folder
+```
+
+Node 23.4+ and 24+ need no flag. Node 20 and older need `better-sqlite3` to install successfully —
+upgrading to Node 22 LTS or newer is the simplest fix.
+
+**Site can't be reached at localhost:4000**
+The server is not running. Check the terminal where you ran `npm start`: it should print a banner
+ending in `URL : http://localhost:4000`. If it exited instead, the error above the prompt says why.
+Verify something is listening with `netstat -ano | findstr :4000`.
+
 ### Full stack on PostgreSQL
 
 ```bash
