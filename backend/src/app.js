@@ -19,13 +19,27 @@ export function createApp() {
       contentSecurityPolicy: false,
     }),
   );
+  /**
+   * CORS.
+   *
+   * Two rules that matter in practice:
+   *  1. The page this server itself serves is always allowed, whatever port it
+   *     was started on. Otherwise `PORT=4100 npm start` would 500 on its own
+   *     JS and CSS, because the browser sends an Origin header for them.
+   *  2. A disallowed origin gets a response *without* CORS headers rather than
+   *     a thrown error. The browser blocks it (correct), and static file
+   *     serving never turns into a 500.
+   */
   app.use(
-    cors({
-      origin(origin, callback) {
-        if (!origin || config.corsOrigins.includes(origin)) return callback(null, true);
-        callback(new Error(`Origin ${origin} is not allowed by CORS`));
-      },
-      credentials: true,
+    cors((req, callback) => {
+      const { origin, host } = req.headers;
+      const isSameOrigin = Boolean(host) && (origin === `http://${host}` || origin === `https://${host}`);
+      const allowed = !origin || isSameOrigin || config.corsOrigins.includes(origin);
+
+      if (!allowed && config.env !== 'test') {
+        console.warn(`[cors] blocked origin ${origin} (add it to CORS_ORIGIN to allow)`);
+      }
+      callback(null, { origin: allowed, credentials: true });
     }),
   );
   app.use(express.json({ limit: '2mb' }));

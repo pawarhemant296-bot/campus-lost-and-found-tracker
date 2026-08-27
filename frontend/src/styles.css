@@ -413,32 +413,11 @@ label.label {
   margin-top: 4px;
 }
 
-input[type='text'],
-input[type='email'],
-input[type='password'],
-input[type='number'],
-input[type='search'],
-input[type='date'],
-input[type='datetime-local'],
-select,
-textarea {
-  width: 100%;
-  padding: 9px 11px;
-  border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
-  background: var(--surface);
-  color: var(--text);
-  font: inherit;
-  font-size: 0.92rem;
-}
-
-input:focus, select:focus, textarea:focus {
-  outline: none;
-  border-color: var(--brand);
-  box-shadow: 0 0 0 3px rgba(63, 79, 216, 0.14);
-}
-
-textarea { resize: vertical; min-height: 92px; }
+/* Text inputs, selects and textareas are Material UI components now, so they
+   must NOT be styled here. Element+attribute selectors such as
+   `input[type='search']` outrank Material's own class, which silently repainted
+   the inner input and made text invisible on light backgrounds. The only native
+   control left is the file picker, styled below. */
 
 input[type='file'] {
   width: 100%;
@@ -810,7 +789,22 @@ table.data tbody tr:hover { background: var(--surface-2); }
   margin-top: 26px;
   max-width: 540px;
 }
-.hero-search input { border: none; }
+/* Always a light field on the coloured hero, in both themes, so the typed text
+   is legible against it. */
+.hero-search .MuiOutlinedInput-root {
+  background: #ffffff;
+}
+.hero-search .MuiOutlinedInput-input {
+  color: #0f172a;
+  background: transparent;
+}
+.hero-search .MuiOutlinedInput-input::placeholder {
+  color: #64748b;
+  opacity: 1;
+}
+.hero-search fieldset {
+  border-color: transparent;
+}
 
 .hero-stats {
   display: grid;

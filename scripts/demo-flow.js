@@ -284,6 +284,14 @@ async function main() {
     servesHtml ? '' : '-> run `npm run build` in the repository root',
   );
 
+  // The browser sends an Origin header for the page's own assets. If CORS
+  // rejects it, the site breaks on any port outside the default allow-list.
+  const assetPath = (homepageBody.match(/src="(\/assets\/[^"]+\.js)"/) ?? [])[1];
+  if (assetPath) {
+    const asset = await fetch(`${baseUrl}${assetPath}`, { headers: { Origin: baseUrl } });
+    check('assets load when the page origin is not in CORS_ORIGIN', asset.ok, `(${assetPath} -> ${asset.status})`);
+  }
+
   // -- 10. Dashboards -------------------------------------------------------
   step(10, 'Dashboards and admin analytics (spec section 12, phase 7)');
   const dashboard = await api('GET', '/items/dashboard', { token: ananya.token });

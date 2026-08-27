@@ -30,13 +30,16 @@ const check = (label, ok, extra = '') => {
   if (!ok) failures += 1;
 };
 
+/**
+ * Deliberately does NOT set CORS_ORIGIN: the suite runs on a non-default port,
+ * so it also proves the app serves its own assets without extra configuration.
+ */
 const env = {
   ...process.env,
   PORT: String(PORT),
   NODE_ENV: 'development',
   SQLITE_FILE: './data/ui-smoke.db',
   PUBLIC_URL: BASE,
-  CORS_ORIGIN: BASE,
 };
 
 async function waitForServer(timeoutMs = 25_000) {
@@ -112,12 +115,47 @@ async function main() {
       await page.goto(`${BASE}${route}`, { waitUntil: 'networkidle' });
     };
 
+    /**
+     * Catches unreadable fields: compares each control's text colour with the
+     * first opaque background behind it. A themed override that repaints an
+     * input without fixing its text colour shows up here immediately.
+     */
+    const checkLegibility = async (where) => {
+      const fields = await page.evaluate(() => {
+        const parse = (colour) => (colour.match(/[\d.]+/g) ?? []).map(Number);
+        const luminance = ([r, g, b]) => 0.2126 * r + 0.7152 * g + 0.0722 * b;
+        const opaqueBackground = (element) => {
+          let node = element;
+          while (node) {
+            const parts = parse(getComputedStyle(node).backgroundColor);
+            if (parts.length >= 3 && (parts[3] === undefined || parts[3] > 0.5)) return parts;
+            node = node.parentElement;
+          }
+          return [255, 255, 255];
+        };
+        return [...document.querySelectorAll('input:not([type=file]), textarea')]
+          .filter((element) => element.offsetParent !== null)
+          .map((element) => ({
+            field: element.id || element.type,
+            contrast: Math.round(Math.abs(luminance(parse(getComputedStyle(element).color)) - luminance(opaqueBackground(element)))),
+          }));
+      });
+      const unreadable = fields.filter((entry) => entry.contrast < 60);
+      check(
+        `text is legible in every field (${where})`,
+        fields.length > 0 && unreadable.length === 0,
+        unreadable.length ? JSON.stringify(unreadable) : `(${fields.length} fields checked)`,
+      );
+    };
+
     // ---- landing ----------------------------------------------------------
     console.log('\n3. Landing page');
     await goto('/');
     check('hero headline rendered', await page.locator('h1').first().isVisible());
     check('live statistics loaded', (await page.locator('.hero-stat').count()) >= 4);
     check('latest reports listed', (await page.locator('.item-card').count()) > 0);
+    await page.fill('.hero-search input', 'black wallet');
+    await checkLegibility('hero search');
     await shot('landing');
 
     // ---- theme ------------------------------------------------------------
@@ -165,6 +203,7 @@ async function main() {
       selectFields > 0 && shrunkLabels === selectFields,
       `(${shrunkLabels}/${selectFields} shrunk)`,
     );
+    await checkLegibility('search filters');
     await shot('search');
 
     // ---- login ------------------------------------------------------------
@@ -172,6 +211,7 @@ async function main() {
     await goto('/login');
     await page.fill('#email', 'ananya@campus.edu');
     await page.fill('#password', 'demo1234');
+    await checkLegibility('sign-in form');
     await page.click('button[type=submit]');
     await page.waitForURL('**/dashboard', { timeout: 15_000 });
     check('redirected to the dashboard', page.url().endsWith('/dashboard'));

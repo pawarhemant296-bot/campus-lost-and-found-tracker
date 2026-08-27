@@ -40,11 +40,6 @@ export default function Landing() {
               value={query}
               onChange={(event) => setQuery(event.target.value)}
               inputProps={{ 'aria-label': 'Search items' }}
-              sx={{
-                '& .MuiOutlinedInput-root': { background: 'rgba(255,255,255,0.95)' },
-                '& .MuiOutlinedInput-input': { color: '#0f172a' },
-                '& fieldset': { borderColor: 'transparent' },
-              }}
             />
             <button type="submit" className="btn btn-ghost">
               Search
