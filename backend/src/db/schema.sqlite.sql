@@ -65,6 +65,8 @@ CREATE TABLE IF NOT EXISTS claims (
   proof_image_url TEXT,
   status          TEXT    NOT NULL DEFAULT 'PENDING',       -- PENDING | UNDER_REVIEW | APPROVED | REJECTED | HANDOVER_CONFIRMED
   auto_score      REAL,                                    -- similarity between answer and secret_details
+  image_score     REAL,                                    -- AI similarity: proof photo vs item photo (0-100)
+  image_verdict   TEXT,                                    -- likely_same_item | possibly_same_item | likely_different_item
   reviewer_id     INTEGER REFERENCES users(user_id) ON DELETE SET NULL,
   review_note     TEXT,
   created_at      TEXT    NOT NULL,

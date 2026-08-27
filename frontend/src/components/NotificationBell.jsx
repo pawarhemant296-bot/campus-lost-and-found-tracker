@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useNotifications } from '../context/NotificationContext.jsx';
 import { relativeTime } from '../utils/format.js';
+import { BellIcon } from './ui/Icons.jsx';
 
 const ICONS = {
   MATCH_FOUND: '🎯',
@@ -37,12 +38,12 @@ export default function NotificationBell() {
     <div className="bell" ref={container} style={{ position: 'relative' }}>
       <button
         type="button"
-        className="btn btn-ghost btn-sm"
+        className="icon-btn"
         onClick={() => setOpen((value) => !value)}
         aria-label={`Notifications${unread ? ` (${unread} unread)` : ''}`}
         aria-expanded={open}
       >
-        🔔
+        <BellIcon />
         {unread > 0 && <span className="bell-count">{unread > 9 ? '9+' : unread}</span>}
       </button>
 

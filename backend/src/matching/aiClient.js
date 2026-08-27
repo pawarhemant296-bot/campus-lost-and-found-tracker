@@ -67,6 +67,33 @@ export async function scorePairWithAi(lostItem, foundItem) {
   }
 }
 
+/**
+ * Ownership verification aid (spec section 7): compares the claimant's proof
+ * photo with the photo on the item report.
+ *
+ * @returns {Promise<{score:number|null,verdict:string,model:string}|null>}
+ *   null means "no AI input available"; the claim is then reviewed on text alone.
+ */
+export async function verifyClaimImage(itemImageUrl, proofImageUrl) {
+  if (!config.ai.enabled || isCircuitOpen()) return null;
+  if (!itemImageUrl || !proofImageUrl) return null;
+  try {
+    const data = await postJson('/verify-image', {
+      item_image_url: itemImageUrl,
+      proof_image_url: proofImageUrl,
+    });
+    return {
+      score: typeof data.image_similarity === 'number' ? data.image_similarity : null,
+      verdict: data.verdict ?? 'unavailable',
+      model: data.model ?? 'unknown',
+    };
+  } catch (error) {
+    openCircuit();
+    console.warn(`[ai] image verification unavailable (${error.message}); reviewing on text evidence only`);
+    return null;
+  }
+}
+
 export async function aiHealth() {
   if (!config.ai.enabled) return { enabled: false, reachable: false };
   try {

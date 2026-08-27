@@ -88,6 +88,8 @@ The unique constraint makes re-running the engine an upsert: scores update, dupl
 | `answer` | text | answer to `verification_question` |
 | `proof_image_url` | text | optional supporting photo |
 | `auto_score` | real | similarity between the answer/proof and `secret_details` — guidance only |
+| `image_score` | real | AI similarity (0–100) between the claimant's proof photo and the item photo |
+| `image_verdict` | text | `likely_same_item` \| `possibly_same_item` \| `likely_different_item` |
 | `status` | text | `PENDING` → `UNDER_REVIEW` → `APPROVED` \| `REJECTED` → `HANDOVER_CONFIRMED` |
 | `reviewer_id`, `review_note` | FK / text | who decided, and why |
 | `created_at`, `updated_at` | timestamp | |

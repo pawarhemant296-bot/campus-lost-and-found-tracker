@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import api, { toFormData } from '../api/client.js';
 import { ErrorBanner, Loading } from '../components/Feedback.jsx';
+import { Field, TextArea } from '../components/ui/Field.jsx';
 import { useToast } from '../context/ToastContext.jsx';
 import useApi from '../hooks/useApi.js';
 
@@ -79,29 +80,24 @@ export default function ClaimForm() {
         </div>
 
         <div className="field">
-          <label className="label" htmlFor="answer">
-            Your answer {prompt.requires_answer && <span className="muted">(graded automatically)</span>}
-          </label>
-          <input
+          <Field
             id="answer"
+            label={prompt.requires_answer ? 'Your answer (graded automatically)' : 'Your answer'}
             required={prompt.requires_answer}
             placeholder="Be specific — contents, marks, serial numbers…"
             value={answer}
             onChange={(event) => setAnswer(event.target.value)}
+            hint="Your answer is compared with the private detail the finder stored. A human still makes the final call."
           />
-          <div className="hint">
-            Your answer is compared with the private detail the finder stored. A human still makes the final call.
-          </div>
         </div>
 
         <div className="field">
-          <label className="label" htmlFor="proof">
-            Additional proof of ownership
-          </label>
-          <textarea
+          <TextArea
             id="proof"
+            label="Additional proof of ownership"
             required
-            minLength={10}
+            rows={4}
+            inputProps={{ minLength: 10 }}
             placeholder="When and where you lost it, unique marks, what else was inside, a previous photo you have…"
             value={proof}
             onChange={(event) => setProof(event.target.value)}
@@ -113,7 +109,10 @@ export default function ClaimForm() {
             Supporting photo <span className="muted">(optional)</span>
           </label>
           <input id="proof-image" type="file" accept="image/*" onChange={(event) => setFile(event.target.files?.[0] ?? null)} />
-          <div className="hint">For example an older photo of you with the item, or a receipt.</div>
+          <div className="hint">
+            An older photo of you with the item, or a receipt. If the report has a photo too, our AI compares the two
+            and shows the reviewer how strongly they match.
+          </div>
         </div>
 
         <div className="row">

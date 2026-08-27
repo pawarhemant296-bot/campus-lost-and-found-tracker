@@ -57,6 +57,30 @@ Existing matches keep their old scores until you re-score them: admin dashboard 
 `image_similarity: null` means "not comparable" (missing URL, download failure, or Pillow absent) —
 the backend then marks the image factor as *skipped* and redistributes its weight.
 
+### `POST /verify-image`
+
+Ownership verification aid: compares the claimant's proof photo with the photo on the item report.
+
+```json
+{ "item_image_url": "http://localhost:4000/uploads/a.jpg", "proof_image_url": "http://localhost:4000/uploads/b.jpg" }
+```
+
+```json
+{ "image_similarity": 0.81, "verdict": "likely_same_item", "model": "image:ahash+histogram", "took_ms": 240 }
+```
+
+Verdict bands (tunable with `AI_IMAGE_MATCH_THRESHOLD` / `AI_IMAGE_POSSIBLE_THRESHOLD`):
+
+| Verdict | Meaning |
+| --- | --- |
+| `likely_same_item` | ≥ 0.72 similarity |
+| `possibly_same_item` | ≥ 0.45 |
+| `likely_different_item` | below 0.45 |
+| `unavailable` | a photo was missing, undownloadable, or Pillow is not installed |
+
+The backend stores the score on the claim and shows it to the reviewer beside the two photos. It is
+**advisory only** — it never approves or rejects a claim.
+
 ### `POST /similarity/batch`
 
 Takes an array of the same payload; used when re-scoring many pairs.

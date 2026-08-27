@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Empty, ErrorBanner, Loading } from '../components/Feedback.jsx';
 import ItemCard from '../components/ItemCard.jsx';
+import { SelectField } from '../components/ui/Field.jsx';
 import useApi from '../hooks/useApi.js';
 
 const TABS = [
@@ -50,14 +51,15 @@ export default function MyReports() {
             </button>
           ))}
         </div>
-        <select value={status} onChange={(event) => setStatus(event.target.value)} style={{ maxWidth: 240 }} aria-label="Filter by status">
-          <option value="">Any status</option>
-          {(meta?.statuses ?? []).map((entry) => (
-            <option key={entry} value={entry}>
-              {entry.replace(/_/g, ' ')}
-            </option>
-          ))}
-        </select>
+        <SelectField
+          id="status-filter"
+          label="Status"
+          value={status}
+          onChange={(event) => setStatus(event.target.value)}
+          sx={{ maxWidth: 240 }}
+          placeholder="Any status"
+          options={(meta?.statuses ?? []).map((entry) => ({ value: entry, label: entry.replace(/_/g, ' ') }))}
+        />
       </div>
 
       <ErrorBanner error={error} onRetry={reload} />

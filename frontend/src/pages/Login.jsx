@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { Field } from '../components/ui/Field.jsx';
 import { useAuth } from '../context/AuthContext.jsx';
 import { useToast } from '../context/ToastContext.jsx';
 
@@ -43,11 +44,9 @@ export default function Login() {
 
         <form onSubmit={submit}>
           <div className="field">
-            <label className="label" htmlFor="email">
-              Email
-            </label>
-            <input
+            <Field
               id="email"
+              label="Email"
               type="email"
               autoComplete="email"
               required
@@ -56,11 +55,9 @@ export default function Login() {
             />
           </div>
           <div className="field">
-            <label className="label" htmlFor="password">
-              Password
-            </label>
-            <input
+            <Field
               id="password"
+              label="Password"
               type="password"
               autoComplete="current-password"
               required

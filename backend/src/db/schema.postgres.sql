@@ -64,6 +64,8 @@ CREATE TABLE IF NOT EXISTS claims (
   proof_image_url TEXT,
   status          TEXT        NOT NULL DEFAULT 'PENDING',
   auto_score      REAL,
+  image_score     REAL,
+  image_verdict   TEXT,
   reviewer_id     INTEGER     REFERENCES users(user_id) ON DELETE SET NULL,
   review_note     TEXT,
   created_at      TIMESTAMPTZ NOT NULL,

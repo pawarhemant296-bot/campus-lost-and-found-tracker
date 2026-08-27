@@ -1,6 +1,6 @@
-# Spec coverage — PCE SW PS 13
+# Requirement coverage
 
-Every requirement in the problem statement, mapped to where it lives in the code.
+Every requirement from the project brief, mapped to where it lives in the code.
 
 ## Section 2 — Main modules
 
@@ -58,6 +58,7 @@ scoring zero. Details in [MATCHING.md](MATCHING.md).
 | 1. User clicks *Claim item* | `pages/ItemDetail.jsx` → `/items/:id/claim` |
 | 2. System asks verification questions / proof | `GET /api/claims/prompt/:itemId` |
 | 3. Unique mark, contents, photo, serial detail | `answer`, `proof`, `proof_image_url` fields |
+| 3b. AI photo check | `verifyClaimImage()` → `POST /verify-image`; stores `image_score` + verdict for the reviewer |
 | 4. Reviewed by the finder and/or admin | `assertCanReview`, admin queue in the dashboard |
 | 5. Safe handover arranged | contact card unlocked on approval + item-scoped chat |
 | 6. Item marked RETURNED, case closed | `confirmHandover()` → `RETURNED` → `CLOSED` |
@@ -128,7 +129,9 @@ Plus an edit-report screen and a 404 page — 17 screens in total.
 | Advanced | Status |
 | --- | --- |
 | College email verification | ✅ `ALLOWED_EMAIL_DOMAINS` + `POST /auth/verify-email` |
-| AI image matching | ✅ optional Python service (aHash + colour histogram) |
+| AI image matching | ✅ optional Python service (aHash + colour histogram), used both for match scoring and for **claim photo verification** |
+| Dark theme | ✅ dark by default with a persisted light/dark switch |
+| Material Design inputs | ✅ Material UI form controls throughout |
 | Semantic description matching | ✅ sentence-transformers → TF-IDF fallback |
 | Real-time notifications | ✅ Socket.IO push + polling fallback |
 | In-app chat / WebSocket | ✅ item-scoped chat with live delivery |

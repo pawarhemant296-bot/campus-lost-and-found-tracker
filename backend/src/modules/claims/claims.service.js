@@ -7,6 +7,7 @@
  * but a human (the finder or an admin) always makes the final decision.
  */
 import db from '../../db/index.js';
+import { verifyClaimImage } from '../../matching/aiClient.js';
 import { textSimilarity } from '../../matching/similarity.js';
 import { emitToUser } from '../../realtime/hub.js';
 import {
@@ -30,6 +31,7 @@ const CLAIM_SELECT = `
          i.title AS item_title,
          i.type  AS item_type,
          i.status AS item_status,
+         i.image_url AS item_image_url,
          i.user_id AS item_owner_id,
          owner.name AS item_owner_name
   FROM claims c
@@ -61,6 +63,28 @@ export function gradeAnswer(secretDetails, answer, proof) {
   const proofScore = textSimilarity(secretDetails, proof ?? '');
   return Math.round(Math.max(answerScore, proofScore) * 1000) / 10;
 }
+
+/**
+ * Single confidence figure for the reviewer, from whichever evidence exists.
+ * Text evidence dominates because it is the private detail only the owner knows;
+ * the photo comparison corroborates it.
+ */
+export function combineEvidence(textScore, imageScore) {
+  const hasText = textScore != null;
+  const hasImage = imageScore != null;
+  if (!hasText && !hasImage) return null;
+  if (hasText && hasImage) return Math.round((0.65 * textScore + 0.35 * imageScore) * 10) / 10;
+  return Math.round((hasText ? textScore : imageScore) * 10) / 10;
+}
+
+const IMAGE_VERDICT_LABELS = {
+  likely_same_item: 'The photos look like the same item',
+  possibly_same_item: 'The photos are somewhat similar',
+  likely_different_item: 'The photos look like different items',
+  unavailable: 'Photo comparison unavailable',
+};
+
+export const imageVerdictLabel = (verdict) => IMAGE_VERDICT_LABELS[verdict] ?? IMAGE_VERDICT_LABELS.unavailable;
 
 /** Question a claimant must answer, without leaking the expected answer. */
 export async function verificationPrompt(itemId, viewer) {
@@ -98,11 +122,24 @@ export async function submitClaim(viewer, { item_id, proof, answer, proof_image_
   if (existing) throw conflict('You already have a claim under review for this item');
 
   const autoScore = gradeAnswer(item.secret_details, answer, proof);
+
+  // AI image verification: does the claimant's proof photo show the same object
+  // as the item report? Optional and non-blocking - a failure just omits it.
+  let imageScore = null;
+  let imageVerdict = null;
+  const imageCheck = await verifyClaimImage(item.image_url, proof_image_url).catch(() => null);
+  if (imageCheck?.score != null) {
+    imageScore = Math.round(imageCheck.score * 1000) / 10;
+    imageVerdict = imageCheck.verdict;
+  }
+
   const timestamp = now();
 
   const claim = await db.insertReturning(
-    `INSERT INTO claims (item_id, claimant_id, match_id, proof, answer, proof_image_url, status, auto_score, created_at, updated_at)
-     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    `INSERT INTO claims
+       (item_id, claimant_id, match_id, proof, answer, proof_image_url, status,
+        auto_score, image_score, image_verdict, created_at, updated_at)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
      RETURNING *`,
     [
       item_id,
@@ -113,6 +150,8 @@ export async function submitClaim(viewer, { item_id, proof, answer, proof_image_
       proof_image_url ?? null,
       CLAIM_STATUS.PENDING,
       autoScore,
+      imageScore,
+      imageVerdict,
       timestamp,
       timestamp,
     ],
@@ -120,12 +159,19 @@ export async function submitClaim(viewer, { item_id, proof, answer, proof_image_
 
   await itemsRepo.updateItem(item_id, { status: ITEM_STATUS.CLAIM_REQUESTED });
 
+  const evidenceSummary = [
+    autoScore != null ? `answer ${autoScore}%` : null,
+    imageScore != null ? `photo ${imageScore}%` : null,
+  ]
+    .filter(Boolean)
+    .join(', ');
+
   await notify({
     userId: item.user_id,
     type: NOTIFICATION_TYPES.CLAIM_SUBMITTED,
     title: 'New ownership claim',
     message: `${viewer.name} submitted a claim for "${item.title}"${
-      autoScore != null ? ` (automatic proof score ${autoScore}%)` : ''
+      evidenceSummary ? ` (${evidenceSummary})` : ''
     }. Please review the proof.`,
     link: `/claims/${claim.claim_id}`,
   });
@@ -148,9 +194,16 @@ export async function getById(claimId, viewer) {
     contact = await db.one('SELECT user_id, name, email, phone FROM users WHERE user_id = ?', [counterpartId]);
   }
 
+  const autoScore = claim.auto_score == null ? null : Number(claim.auto_score);
+  const imageScore = claim.image_score == null ? null : Number(claim.image_score);
+
   return {
     ...claim,
-    auto_score: claim.auto_score == null ? null : Number(claim.auto_score),
+    auto_score: autoScore,
+    image_score: imageScore,
+    image_verdict_label: claim.image_verdict ? imageVerdictLabel(claim.image_verdict) : null,
+    /** Combined text + photo confidence shown to the reviewer. */
+    confidence: combineEvidence(autoScore, imageScore),
     can_review: isReviewer && OPEN_STATUSES.includes(claim.status),
     can_confirm_handover: isReviewer && claim.status === CLAIM_STATUS.APPROVED,
     contact,

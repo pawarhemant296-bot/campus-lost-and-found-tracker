@@ -1,8 +1,7 @@
-# Lost &amp; Found Item Tracker
+# Campus Lost &amp; Found Tracker
 
-**PCE SW PS 13** — a centralised platform where people report lost or found items, search listings,
-receive smart match suggestions, verify ownership, communicate securely and track an item to
-its return.
+A centralised platform where people report lost or found items, search listings, receive smart
+match suggestions, verify ownership, communicate securely and track an item to its return.
 
 The complete journey works end to end:
 
@@ -86,9 +85,10 @@ docker compose up --build     # Postgres + API/UI + Python AI service
 Three self-contained checks, all runnable before you present:
 
 ```bash
-npm run demo      # 38 assertions over the whole REST journey (boots the API in-process)
-npm run test:ui   # drives the real UI in Chromium: 30 assertions, fails on any console error
-cd ai-service && .venv/bin/python ../scripts/ai-integration-check.py   # AI service wiring
+npm run demo      # 39 assertions over the whole REST journey (boots the API in-process)
+npm run test:ui   # drives the real UI in Chromium: 38 assertions, fails on any console error
+cd ai-service && .venv/bin/python -m pytest -q                        # AI service unit tests
+cd ai-service && .venv/bin/python ../scripts/ai-integration-check.py  # AI wiring + degradation
 ```
 
 `npm run demo` prints the judge-facing walkthrough with the live score breakdown:
@@ -136,7 +136,7 @@ Add `SHOTS=./.shots` to save a screenshot of every screen.
 
 | Layer | Technology | Notes |
 | --- | --- | --- |
-| Frontend | React 18, React Router, plain CSS design system | no UI framework to fight with |
+| Frontend | React 18, React Router, Material UI form controls, CSS-variable design system | dark theme by default, with a persisted light/dark switch |
 | Backend | Node.js 18+, Express 4 | modular: one folder per domain module |
 | Database | **SQLite by default, PostgreSQL when `DATABASE_URL` is set** | identical SQL, two schema files |
 | Auth | JWT + bcrypt, role based (`user` / `admin`) | optional college-domain restriction |
@@ -152,7 +152,7 @@ Deeper documentation:
 - [docs/DATABASE.md](docs/DATABASE.md) — tables, relationships, status lifecycles
 - [docs/API.md](docs/API.md) — every endpoint with request/response examples
 - [docs/DEMO-SCRIPT.md](docs/DEMO-SCRIPT.md) — the 3-minute presentation, keystroke by keystroke
-- [docs/SPEC-COVERAGE.md](docs/SPEC-COVERAGE.md) — every requirement in PS 13 mapped to code
+- [docs/SPEC-COVERAGE.md](docs/SPEC-COVERAGE.md) — every requirement mapped to the code that implements it
 
 ---
 
@@ -169,6 +169,16 @@ matched.
 The finder stores a private detail that the API **never returns to anyone**. A claimant must
 describe it; the API grades the answer automatically to assist the reviewer, but a human — the
 finder or an admin — always decides. Contact details unlock only after approval.
+
+**AI photo verification of claims**
+When the claimant uploads a proof photo and the report has one too, the Python service compares them
+(perceptual hash + colour profile) and the reviewer sees both images side by side with a similarity
+score, a plain-language verdict, and a combined confidence figure that weights the private-detail
+answer higher than the photo. Entirely advisory, and skipped silently when unavailable.
+
+**Dark theme**
+Dark by default, with a light/dark switch in the header that persists across reloads. All colours
+come from CSS variables, and the Material UI palette is generated from the same tokens.
 
 **Item lifecycle**
 `REPORTED → POSSIBLE_MATCH → CLAIM_REQUESTED → VERIFICATION → RETURNED → CLOSED`, enforced

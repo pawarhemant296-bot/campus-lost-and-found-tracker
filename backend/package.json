@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "type": "module",
-  "description": "Lost & Found Item Tracker - REST API, matching engine, claim workflow (PCE SW PS 13)",
+  "description": "Campus Lost & Found Tracker - REST API, matching engine, claim workflow",
   "main": "src/server.js",
   "scripts": {
     "start": "node src/server.js",

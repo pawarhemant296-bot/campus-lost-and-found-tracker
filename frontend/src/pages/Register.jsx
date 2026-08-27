@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { Field } from '../components/ui/Field.jsx';
 import { useAuth } from '../context/AuthContext.jsx';
 import { useToast } from '../context/ToastContext.jsx';
 
@@ -47,38 +48,50 @@ export default function Register() {
 
         <form onSubmit={submit}>
           <div className="field">
-            <label className="label" htmlFor="name">
-              Full name
-            </label>
-            <input id="name" required minLength={2} value={form.name} onChange={update('name')} />
+            <Field id="name" label="Full name" required inputProps={{ minLength: 2 }} value={form.name} onChange={update('name')} />
           </div>
           <div className="field">
-            <label className="label" htmlFor="email">
-              Email
-            </label>
-            <input id="email" type="email" required value={form.email} onChange={update('email')} />
-            <div className="hint">
-              Set <code>ALLOWED_EMAIL_DOMAINS</code> on the server to restrict sign-ups to your college domain.
-            </div>
+            <Field
+              id="email"
+              label="Email"
+              type="email"
+              required
+              value={form.email}
+              onChange={update('email')}
+              hint="Set ALLOWED_EMAIL_DOMAINS on the server to restrict sign-ups to your college domain."
+            />
           </div>
           <div className="field">
-            <label className="label" htmlFor="phone">
-              Phone <span className="muted">(optional, shared only after a claim is approved)</span>
-            </label>
-            <input id="phone" value={form.phone} onChange={update('phone')} />
+            <Field
+              id="phone"
+              label="Phone (optional)"
+              value={form.phone}
+              onChange={update('phone')}
+              hint="Shared only after a claim is approved."
+            />
           </div>
           <div className="form-grid">
             <div className="field">
-              <label className="label" htmlFor="password">
-                Password
-              </label>
-              <input id="password" type="password" required minLength={6} value={form.password} onChange={update('password')} />
+              <Field
+                id="password"
+                label="Password"
+                type="password"
+                required
+                inputProps={{ minLength: 6 }}
+                value={form.password}
+                onChange={update('password')}
+              />
             </div>
             <div className="field">
-              <label className="label" htmlFor="confirm">
-                Confirm password
-              </label>
-              <input id="confirm" type="password" required minLength={6} value={form.confirm} onChange={update('confirm')} />
+              <Field
+                id="confirm"
+                label="Confirm password"
+                type="password"
+                required
+                inputProps={{ minLength: 6 }}
+                value={form.confirm}
+                onChange={update('confirm')}
+              />
             </div>
           </div>
           <button type="submit" className="btn btn-block btn-lg" disabled={busy}>

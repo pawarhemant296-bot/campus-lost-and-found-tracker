@@ -3,6 +3,7 @@ import { Link, useNavigate, useParams } from 'react-router-dom';
 import api, { toFormData } from '../api/client.js';
 import { ErrorBanner, Loading } from '../components/Feedback.jsx';
 import { MatchBreakdown, ScoreRing } from '../components/MatchScore.jsx';
+import { DatalistField, Field, TextArea } from '../components/ui/Field.jsx';
 import { useToast } from '../context/ToastContext.jsx';
 import useApi from '../hooks/useApi.js';
 import { scoreLabel, toDateTimeLocal } from '../utils/format.js';
@@ -225,30 +226,35 @@ export default function ReportItem({ editing = false }) {
 
         <div className="form-grid">
           <div className="field">
-            <label className="label" htmlFor="title">
-              Item title
-            </label>
-            <input id="title" required minLength={3} placeholder="Black leather wallet" value={form.title} onChange={update('title')} />
+            <Field
+              id="title"
+              label="Item title"
+              required
+              inputProps={{ minLength: 3 }}
+              placeholder="Black leather wallet"
+              value={form.title}
+              onChange={update('title')}
+            />
           </div>
           <div className="field">
-            <label className="label" htmlFor="category">
-              Category
-            </label>
-            <input id="category" list="category-options" required placeholder="Wallet / Purse" value={form.category} onChange={update('category')} />
-            <datalist id="category-options">
-              {categories.map((category) => (
-                <option key={category} value={category} />
-              ))}
-            </datalist>
+            <DatalistField
+              id="category"
+              label="Category"
+              listId="category-options"
+              options={categories}
+              required
+              placeholder="Wallet / Purse"
+              value={form.category}
+              onChange={update('category')}
+            />
           </div>
         </div>
 
         <div className="field">
-          <label className="label" htmlFor="description">
-            Description
-          </label>
-          <textarea
+          <TextArea
             id="description"
+            label="Description"
+            rows={4}
             placeholder={
               isFound
                 ? 'Where exactly it was lying, colour, brand, visible condition…'
@@ -256,22 +262,33 @@ export default function ReportItem({ editing = false }) {
             }
             value={form.description}
             onChange={update('description')}
+            hint="Description similarity is worth 25% of the match score — details pay off."
           />
-          <div className="hint">Description similarity is worth 25% of the match score — details pay off.</div>
         </div>
 
         <div className="form-grid">
           <div className="field">
-            <label className="label" htmlFor="location">
-              {isFound ? 'Where did you find it?' : 'Where did you lose it?'}
-            </label>
-            <input id="location" required minLength={2} placeholder="College Canteen, Block B" value={form.location} onChange={update('location')} />
+            <Field
+              id="location"
+              label={isFound ? 'Where did you find it?' : 'Where did you lose it?'}
+              required
+              inputProps={{ minLength: 2 }}
+              placeholder="College Canteen, Block B"
+              value={form.location}
+              onChange={update('location')}
+            />
           </div>
           <div className="field">
-            <label className="label" htmlFor="occurred_at">
-              Date &amp; time
-            </label>
-            <input id="occurred_at" type="datetime-local" required value={form.occurred_at} onChange={update('occurred_at')} max={toDateTimeLocal()} />
+            <Field
+              id="occurred_at"
+              label="Date & time"
+              type="datetime-local"
+              required
+              InputLabelProps={{ shrink: true }}
+              inputProps={{ max: toDateTimeLocal() }}
+              value={form.occurred_at}
+              onChange={update('occurred_at')}
+            />
           </div>
         </div>
 
@@ -284,9 +301,9 @@ export default function ReportItem({ editing = false }) {
               📍 Use my location
             </button>
           </div>
-          <div className="form-grid" style={{ marginTop: 6 }}>
-            <input placeholder="Latitude" value={form.latitude} onChange={update('latitude')} inputMode="decimal" />
-            <input placeholder="Longitude" value={form.longitude} onChange={update('longitude')} inputMode="decimal" />
+          <div className="form-grid" style={{ marginTop: 10 }}>
+            <Field id="latitude" label="Latitude" value={form.latitude} onChange={update('latitude')} inputMode="decimal" />
+            <Field id="longitude" label="Longitude" value={form.longitude} onChange={update('longitude')} inputMode="decimal" />
           </div>
           <div className="hint">With coordinates on both reports the engine uses real distance instead of text similarity.</div>
         </div>
@@ -307,30 +324,23 @@ export default function ReportItem({ editing = false }) {
               is what stops anyone from simply claiming it.
             </p>
             <div className="field">
-              <label className="label" htmlFor="verification_question">
-                Question for the claimant
-              </label>
-              <input
+              <Field
                 id="verification_question"
+                label="Question for the claimant"
                 placeholder="Which cards are inside, and what is unusual about its condition?"
                 value={form.verification_question}
                 onChange={update('verification_question')}
               />
             </div>
             <div className="field" style={{ marginBottom: 0 }}>
-              <label className="label" htmlFor="secret_details">
-                Expected answer / private detail
-              </label>
-              <input
+              <Field
                 id="secret_details"
+                label="Expected answer / private detail"
                 placeholder="library card and a torn right corner"
                 value={form.secret_details}
                 onChange={update('secret_details')}
+                hint="Stored privately and never returned by the API — not even to you. Claim answers are graded against it automatically."
               />
-              <div className="hint">
-                Stored privately and never returned by the API — not even to you. Claim answers are graded against it
-                automatically.
-              </div>
             </div>
           </fieldset>
         )}

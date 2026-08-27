@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import api from '../api/client.js';
 import { ErrorBanner, Loading } from '../components/Feedback.jsx';
 import { ScoreRing } from '../components/MatchScore.jsx';
+import { Field, SelectField } from '../components/ui/Field.jsx';
 import { useToast } from '../context/ToastContext.jsx';
 import useApi from '../hooks/useApi.js';
 import { formatDate, humanStatus, relativeTime, statusTone } from '../utils/format.js';
@@ -174,14 +175,18 @@ function ClaimsTab() {
     <div className="card">
       <div className="card-head">
         <h3>All claims</h3>
-        <select value={status} onChange={(event) => setStatus(event.target.value)} style={{ maxWidth: 220 }}>
-          <option value="">Any status</option>
-          {['PENDING', 'UNDER_REVIEW', 'APPROVED', 'REJECTED', 'HANDOVER_CONFIRMED'].map((entry) => (
-            <option key={entry} value={entry}>
-              {entry.replace(/_/g, ' ')}
-            </option>
-          ))}
-        </select>
+        <SelectField
+          id="admin-claim-status"
+          label="Status"
+          value={status}
+          onChange={(event) => setStatus(event.target.value)}
+          sx={{ maxWidth: 220 }}
+          placeholder="Any status"
+          options={['PENDING', 'UNDER_REVIEW', 'APPROVED', 'REJECTED', 'HANDOVER_CONFIRMED'].map((entry) => ({
+            value: entry,
+            label: entry.replace(/_/g, ' '),
+          }))}
+        />
       </div>
       <ErrorBanner error={error} onRetry={reload} />
       <div className="table-wrap">
@@ -238,7 +243,13 @@ function ItemsTab({ act }) {
     <div className="card">
       <div className="card-head">
         <h3>Reports</h3>
-        <input placeholder="Search reports…" value={query} onChange={(event) => setQuery(event.target.value)} style={{ maxWidth: 260 }} />
+        <Field
+          id="admin-item-search"
+          label="Search reports"
+          value={query}
+          onChange={(event) => setQuery(event.target.value)}
+          sx={{ maxWidth: 260 }}
+        />
       </div>
       <ErrorBanner error={error} onRetry={reload} />
       {loading ? (
@@ -312,7 +323,13 @@ function UsersTab({ act }) {
     <div className="card">
       <div className="card-head">
         <h3>Users</h3>
-        <input placeholder="Search name or email…" value={query} onChange={(event) => setQuery(event.target.value)} style={{ maxWidth: 260 }} />
+        <Field
+          id="admin-user-search"
+          label="Search name or email"
+          value={query}
+          onChange={(event) => setQuery(event.target.value)}
+          sx={{ maxWidth: 260 }}
+        />
       </div>
       <ErrorBanner error={error} onRetry={reload} />
       {loading ? (

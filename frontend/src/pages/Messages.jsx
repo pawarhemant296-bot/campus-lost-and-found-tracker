@@ -3,6 +3,7 @@ import { Link, useParams } from 'react-router-dom';
 import api from '../api/client.js';
 import { onSocketEvent } from '../api/socket.js';
 import { Empty, ErrorBanner, Loading } from '../components/Feedback.jsx';
+import { Field } from '../components/ui/Field.jsx';
 import { useAuth } from '../context/AuthContext.jsx';
 import { useNotifications } from '../context/NotificationContext.jsx';
 import { useToast } from '../context/ToastContext.jsx';
@@ -179,12 +180,12 @@ export default function Messages() {
                 </div>
 
                 <form className="chat-composer" onSubmit={send}>
-                  <input
+                  <Field
+                    id="chat-draft"
                     placeholder="Write a message…"
                     value={draft}
                     onChange={(event) => setDraft(event.target.value)}
-                    maxLength={2000}
-                    aria-label="Message"
+                    inputProps={{ maxLength: 2000, 'aria-label': 'Message' }}
                   />
                   <button type="submit" className="btn" disabled={sending || !draft.trim()}>
                     Send

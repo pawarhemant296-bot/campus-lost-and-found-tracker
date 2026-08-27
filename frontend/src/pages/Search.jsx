@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { Empty, ErrorBanner, Loading } from '../components/Feedback.jsx';
 import ItemCard from '../components/ItemCard.jsx';
+import { Field, SelectField } from '../components/ui/Field.jsx';
 import useApi from '../hooks/useApi.js';
 
 const BLANK = { q: '', type: '', category: '', location: '', date_from: '', date_to: '', sort: 'recent' };
@@ -54,62 +55,67 @@ export default function Search() {
       <div className="card" style={{ marginBottom: 18 }}>
         <div className="form-grid">
           <div className="field">
-            <label className="label" htmlFor="q">
-              Keyword
-            </label>
-            <input id="q" type="search" placeholder="wallet, redmi, id card…" value={filters.q} onChange={update('q')} />
+            <Field id="q" label="Keyword" type="search" placeholder="wallet, redmi, id card…" value={filters.q} onChange={update('q')} />
           </div>
           <div className="field">
-            <label className="label" htmlFor="type">
-              Report type
-            </label>
-            <select id="type" value={filters.type} onChange={update('type')}>
-              <option value="">Lost and found</option>
-              <option value="lost">Lost items only</option>
-              <option value="found">Found items only</option>
-            </select>
+            <SelectField
+              id="type"
+              label="Report type"
+              value={filters.type}
+              onChange={update('type')}
+              options={[
+                { value: '', label: 'Lost and found' },
+                { value: 'lost', label: 'Lost items only' },
+                { value: 'found', label: 'Found items only' },
+              ]}
+            />
           </div>
           <div className="field">
-            <label className="label" htmlFor="category">
-              Category
-            </label>
-            <select id="category" value={filters.category} onChange={update('category')}>
-              <option value="">All categories</option>
-              {(meta?.categories ?? []).map((category) => (
-                <option key={category} value={category}>
-                  {category}
-                </option>
-              ))}
-            </select>
+            <SelectField
+              id="category"
+              label="Category"
+              value={filters.category}
+              onChange={update('category')}
+              placeholder="All categories"
+              options={meta?.categories ?? []}
+            />
           </div>
           <div className="field">
-            <label className="label" htmlFor="location">
-              Location contains
-            </label>
-            <input id="location" placeholder="canteen, library…" value={filters.location} onChange={update('location')} />
+            <Field id="location" label="Location contains" placeholder="canteen, library…" value={filters.location} onChange={update('location')} />
           </div>
           <div className="field">
-            <label className="label" htmlFor="date_from">
-              From date
-            </label>
-            <input id="date_from" type="date" value={filters.date_from} onChange={update('date_from')} />
+            <Field
+              id="date_from"
+              label="From date"
+              type="date"
+              InputLabelProps={{ shrink: true }}
+              value={filters.date_from}
+              onChange={update('date_from')}
+            />
           </div>
           <div className="field">
-            <label className="label" htmlFor="date_to">
-              To date
-            </label>
-            <input id="date_to" type="date" value={filters.date_to} onChange={update('date_to')} />
+            <Field
+              id="date_to"
+              label="To date"
+              type="date"
+              InputLabelProps={{ shrink: true }}
+              value={filters.date_to}
+              onChange={update('date_to')}
+            />
           </div>
           <div className="field">
-            <label className="label" htmlFor="sort">
-              Sort by
-            </label>
-            <select id="sort" value={filters.sort} onChange={update('sort')}>
-              <option value="recent">Newest reports</option>
-              <option value="oldest">Oldest reports</option>
-              <option value="date">Event date</option>
-              <option value="title">Title A–Z</option>
-            </select>
+            <SelectField
+              id="sort"
+              label="Sort by"
+              value={filters.sort}
+              onChange={update('sort')}
+              options={[
+                { value: 'recent', label: 'Newest reports' },
+                { value: 'oldest', label: 'Oldest reports' },
+                { value: 'date', label: 'Event date' },
+                { value: 'title', label: 'Title A–Z' },
+              ]}
+            />
           </div>
         </div>
         <div className="row row-between">

@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import api from '../api/client.js';
 import { ErrorBanner, Loading } from '../components/Feedback.jsx';
+import { TextArea } from '../components/ui/Field.jsx';
 import { useAuth } from '../context/AuthContext.jsx';
 import { useToast } from '../context/ToastContext.jsx';
 import useApi from '../hooks/useApi.js';
@@ -82,10 +83,21 @@ export default function ClaimDetail() {
             <span className="label">Proof of ownership</span>
             <div className="proof-box">{claim.proof || '—'}</div>
 
-            {claim.proof_image_url && (
+            {claim.proof_image_url && !claim.item_image_url && (
               <div style={{ marginTop: 12 }}>
                 <span className="label">Supporting photo</span>
                 <img className="item-hero-image" style={{ maxHeight: 260 }} src={claim.proof_image_url} alt="Claim proof" />
+              </div>
+            )}
+
+            {claim.confidence != null && (
+              <div className="row row-between" style={{ marginTop: 14, gap: 10 }}>
+                <span className="label" style={{ marginBottom: 0 }}>
+                  Combined evidence confidence
+                </span>
+                <strong style={{ color: claim.confidence >= 60 ? 'var(--found)' : 'var(--warn)' }}>
+                  {claim.confidence}%
+                </strong>
               </div>
             )}
 
@@ -98,16 +110,59 @@ export default function ClaimDetail() {
                 </div>
               </div>
             )}
-
-            {claim.review_note && (
-              <>
-                <span className="label" style={{ marginTop: 12, display: 'block' }}>
-                  Reviewer note
-                </span>
-                <div className="proof-box">{claim.review_note}</div>
-              </>
-            )}
           </div>
+
+          {/* AI image verification (spec section 7, advanced) */}
+          {(claim.image_score != null || (claim.item_image_url && claim.proof_image_url)) && (
+            <div className="card">
+              <div className="card-head">
+                <h2>🤖 AI image verification</h2>
+                {claim.image_score != null && (
+                  <span className={`badge ${claim.image_score >= 72 ? 'badge-success' : claim.image_score >= 45 ? 'badge-warn' : 'badge-danger'}`}>
+                    {claim.image_score}% similar
+                  </span>
+                )}
+              </div>
+
+              {claim.image_score == null ? (
+                <p className="muted small" style={{ margin: 0 }}>
+                  Both photos are present but the comparison did not run — the AI service is disabled or was
+                  unreachable. Review the written evidence instead.
+                </p>
+              ) : (
+                <>
+                  <p className="muted small">
+                    {claim.image_verdict_label}. Computed by comparing a perceptual hash and colour profile of the two
+                    photos. Advisory only — it never approves a claim by itself.
+                  </p>
+                  <div className="grid grid-2" style={{ gap: 12 }}>
+                    <figure style={{ margin: 0 }}>
+                      <img className="item-hero-image" style={{ maxHeight: 200 }} src={claim.item_image_url} alt="Photo on the item report" />
+                      <figcaption className="muted tiny center" style={{ marginTop: 6 }}>
+                        Photo on the {claim.item_type} report
+                      </figcaption>
+                    </figure>
+                    <figure style={{ margin: 0 }}>
+                      <img className="item-hero-image" style={{ maxHeight: 200 }} src={claim.proof_image_url} alt="Photo uploaded by the claimant" />
+                      <figcaption className="muted tiny center" style={{ marginTop: 6 }}>
+                        Claimant&apos;s proof photo
+                      </figcaption>
+                    </figure>
+                  </div>
+                  <div className={`bar${claim.image_score >= 45 ? '' : ' skipped'}`} style={{ marginTop: 12 }}>
+                    <div style={{ width: `${claim.image_score}%` }} />
+                  </div>
+                </>
+              )}
+            </div>
+          )}
+
+          {claim.review_note && (
+            <div className="card">
+              <h2>Reviewer note</h2>
+              <div className="proof-box">{claim.review_note}</div>
+            </div>
+          )}
 
           {claim.contact && (
             <div className="card">
@@ -146,12 +201,10 @@ export default function ClaimDetail() {
 
               {claim.can_review && (
                 <>
-                  <div className="field" style={{ marginTop: 10 }}>
-                    <label className="label" htmlFor="note">
-                      Decision note <span className="muted">(optional)</span>
-                    </label>
-                    <textarea
+                  <div className="field" style={{ marginTop: 14 }}>
+                    <TextArea
                       id="note"
+                      label="Decision note (optional)"
                       rows={3}
                       placeholder="Answer matches the contents exactly."
                       value={note}

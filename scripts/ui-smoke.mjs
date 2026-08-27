@@ -120,6 +120,32 @@ async function main() {
     check('latest reports listed', (await page.locator('.item-card').count()) > 0);
     await shot('landing');
 
+    // ---- theme ------------------------------------------------------------
+    console.log('\n3b. Dark theme and the theme switch');
+    check('dark theme is the default', (await page.getAttribute('html', 'data-theme')) === 'dark');
+    const bodyBg = await page.evaluate(() => getComputedStyle(document.body).backgroundColor);
+    check('body paints the dark background', bodyBg === 'rgb(11, 16, 32)', `(${bodyBg})`);
+
+    await page.click('[data-testid=theme-toggle]');
+    await page.waitForTimeout(350);
+    check('toggle switches to light', (await page.getAttribute('html', 'data-theme')) === 'light');
+    await shot('landing-light');
+
+    await page.reload({ waitUntil: 'networkidle' });
+    check('the choice survives a reload', (await page.getAttribute('html', 'data-theme')) === 'light');
+
+    await page.click('[data-testid=theme-toggle]');
+    await page.waitForTimeout(350);
+    check('toggle switches back to dark', (await page.getAttribute('html', 'data-theme')) === 'dark');
+
+    // ---- navbar -----------------------------------------------------------
+    console.log('\n3c. Navbar layout');
+    const navBox = await page.locator('.nav').boundingBox();
+    const navLinks = await page.locator('.nav a').count();
+    check('nav renders on a single line', navBox.height < 56, `(height ${Math.round(navBox.height)}px, ${navLinks} links)`);
+    const navFontSize = await page.evaluate(() => getComputedStyle(document.querySelector('.nav a')).fontSize);
+    check('nav font size increased', parseFloat(navFontSize) >= 15, `(${navFontSize})`);
+
     // ---- search -----------------------------------------------------------
     console.log('\n4. Search & filter');
     await goto('/search');
@@ -127,6 +153,8 @@ async function main() {
     await page.waitForTimeout(700);
     const walletCards = await page.locator('.item-card').count();
     check('keyword search returns wallet reports', walletCards > 0, `(${walletCards} cards)`);
+    const muiInputs = await page.locator('.MuiOutlinedInput-root').count();
+    check('filters use Material UI inputs', muiInputs >= 7, `(${muiInputs} MUI controls)`);
     await shot('search');
 
     // ---- login ------------------------------------------------------------
@@ -142,6 +170,15 @@ async function main() {
     check('dashboard stats rendered', (await page.locator('.stat').count()) >= 4);
     await shot('dashboard');
 
+    // The signed-in navbar carries the most links - the real crowding test.
+    const signedInNav = await page.locator('.nav').boundingBox();
+    const signedInLinks = await page.locator('.nav a').count();
+    check(
+      'signed-in nav still fits on one line',
+      signedInNav.height < 56 && signedInLinks >= 6,
+      `(height ${Math.round(signedInNav.height)}px, ${signedInLinks} links)`,
+    );
+
     const bellText = await page.locator('.bell-count').first().textContent().catch(() => null);
     check('notification bell shows unread matches', Boolean(bellText), `(${bellText ?? 'none'})`);
 
@@ -154,6 +191,7 @@ async function main() {
 
     await page.locator('a:has-text("Review match")').first().click();
     await page.waitForURL('**/matches/*');
+    await page.waitForSelector('.factor-row', { timeout: 15_000 });
     check('match detail shows the weighted breakdown', (await page.locator('.factor-row').count()) === 5);
     const scoreText = await page.locator('.score-ring span').first().textContent();
     check('score displayed on the detail page', /\d+%/.test(scoreText ?? ''), `(${scoreText})`);
@@ -163,6 +201,7 @@ async function main() {
     console.log('\n7. Claim & ownership verification');
     await page.locator('a:has-text("Claim this item")').first().click();
     await page.waitForURL('**/claim');
+    await page.waitForSelector('.alert-info', { timeout: 15_000 });
     check('verification question shown', await page.locator('.alert-info').first().isVisible());
     await page.fill('#answer', 'My library card, and the right corner is torn');
     await page.fill('#proof', 'It is my wallet - torn right corner, library card and about 400 rupees inside.');

@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import ItemCard from '../components/ItemCard.jsx';
+import { Field } from '../components/ui/Field.jsx';
 import { useAuth } from '../context/AuthContext.jsx';
 import useApi from '../hooks/useApi.js';
 
@@ -22,7 +23,7 @@ export default function Landing() {
       <section className="hero">
         <div className="container">
           <span className="badge" style={{ background: 'rgba(255,255,255,.16)', color: '#fff', borderColor: 'rgba(255,255,255,.3)' }}>
-            PCE SW PS 13
+            Smart matching · Verified handovers
           </span>
           <h1 style={{ marginTop: 14 }}>Lost something on campus? Let the match find it.</h1>
           <p>
@@ -32,12 +33,18 @@ export default function Landing() {
           </p>
 
           <form className="hero-search" onSubmit={submit}>
-            <input
+            <Field
+              id="hero-search"
               type="search"
               placeholder="Search for a wallet, phone, ID card…"
               value={query}
               onChange={(event) => setQuery(event.target.value)}
-              aria-label="Search items"
+              inputProps={{ 'aria-label': 'Search items' }}
+              sx={{
+                '& .MuiOutlinedInput-root': { background: 'rgba(255,255,255,0.95)' },
+                '& .MuiOutlinedInput-input': { color: '#0f172a' },
+                '& fieldset': { borderColor: 'transparent' },
+              }}
             />
             <button type="submit" className="btn btn-ghost">
               Search

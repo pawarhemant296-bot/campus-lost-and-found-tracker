@@ -59,6 +59,36 @@ class SimilarityResponse(BaseModel):
     took_ms: int
 
 
+class ImageVerifyRequest(BaseModel):
+    """A claimant's proof photo versus the photo on the item report."""
+
+    item_image_url: Optional[str] = None
+    proof_image_url: Optional[str] = None
+
+
+class ImageVerifyResponse(BaseModel):
+    image_similarity: Optional[float] = Field(None, ge=0, le=1)
+    verdict: str
+    model: str
+    took_ms: int
+
+
+# Verdict bands for claim review. Deliberately conservative: the service never
+# decides a claim, it only tells the reviewer how strongly the photos agree.
+MATCH_THRESHOLD = float(os.getenv("AI_IMAGE_MATCH_THRESHOLD", "0.72"))
+POSSIBLE_THRESHOLD = float(os.getenv("AI_IMAGE_POSSIBLE_THRESHOLD", "0.45"))
+
+
+def _verdict(score: Optional[float]) -> str:
+    if score is None:
+        return "unavailable"
+    if score >= MATCH_THRESHOLD:
+        return "likely_same_item"
+    if score >= POSSIBLE_THRESHOLD:
+        return "possibly_same_item"
+    return "likely_different_item"
+
+
 def _text_of(item: ItemPayload) -> str:
     return " ".join(part for part in (item.title, item.category, item.description) if part).strip()
 
@@ -96,6 +126,34 @@ def similarity(request: SimilarityRequest) -> SimilarityResponse:
         description_similarity=max(0.0, min(1.0, description_score)),
         image_similarity=None if image_score is None else max(0.0, min(1.0, image_score)),
         model=TEXT_BACKEND.name,
+        took_ms=int((time.perf_counter() - started) * 1000),
+    )
+
+
+@app.post("/verify-image", response_model=ImageVerifyResponse)
+def verify_image(request: ImageVerifyRequest) -> ImageVerifyResponse:
+    """
+    Ownership verification aid: compares the photo a claimant uploaded as proof
+    with the photo on the item report.
+
+    Returns a similarity plus a plain-language verdict. `unavailable` means the
+    comparison could not be made (missing photo, download failure, Pillow
+    absent) - the backend then simply omits this evidence.
+    """
+    started = time.perf_counter()
+
+    score: Optional[float] = None
+    if IMAGE_MATCHING_ENABLED:
+        try:
+            score = image_similarity(request.item_image_url, request.proof_image_url, IMAGE_TIMEOUT)
+        except Exception as error:  # noqa: BLE001 - never fail a claim submission
+            log.exception("image verification failed: %s", error)
+            score = None
+
+    return ImageVerifyResponse(
+        image_similarity=None if score is None else max(0.0, min(1.0, score)),
+        verdict=_verdict(score),
+        model="image:ahash+histogram",
         took_ms=int((time.perf_counter() - started) * 1000),
     )
 

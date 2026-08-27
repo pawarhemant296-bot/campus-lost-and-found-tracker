@@ -215,6 +215,22 @@ Response `201`:
 **advisory only**; a human always decides. `contact` stays `null` until the claim is approved, then
 it contains the counterpart's name, email and phone.
 
+When both the item report and the claim carry a photo and the AI service is enabled, the claim also
+returns an image comparison:
+
+```json
+{
+  "image_score": 81.4,
+  "image_verdict": "likely_same_item",
+  "image_verdict_label": "The photos look like the same item",
+  "confidence": 90.3
+}
+```
+
+`confidence` blends the two signals (`0.65 × answer + 0.35 × photo`), weighting the private detail
+higher because only the true owner can know it. All three fields are `null` when the evidence is
+unavailable.
+
 Rejections: claiming your own report → `400`, a second open claim on the same item → `409`,
 someone else's claim → `403`.
 
