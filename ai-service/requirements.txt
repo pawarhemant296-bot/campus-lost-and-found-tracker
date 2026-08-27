@@ -1,8 +1,0 @@
-# Core service - light and fast to install (works on Python 3.9+)
-fastapi==0.115.5
-uvicorn[standard]==0.32.1
-pydantic==2.10.3
-
-# TF-IDF text similarity + image similarity
-scikit-learn==1.5.2
-pillow==11.0.0

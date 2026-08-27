@@ -1,264 +1,307 @@
-# Campus Lost &amp; Found Tracker
+# TraceBack — Lost &amp; Found Item Tracker
 
-A centralised platform where people report lost or found items, search listings, receive smart
-match suggestions, verify ownership, communicate securely and track an item to its return.
+> **PCE SW PS 13** · A centralised platform where people report lost or found items, get
+> AI-assisted match suggestions, prove ownership privately, chat securely and track an item
+> all the way back to its owner.
 
-The complete journey works end to end:
+TraceBack is a complete, working full-stack application — not a mockup. Every screen is wired
+to a real REST API, a real database and a real matching engine.
 
 ```
-report lost → report found → engine scores a match → both users notified
-→ claim submitted → ownership verified → handover confirmed → RETURNED → CLOSED
+Student A loses a wallet → reports it
+Student B finds a wallet → reports it (+ private ownership questions)
+        ↓
+Matching engine scores 5 signals → 88-95% match → both sides notified
+        ↓
+Student A claims it → answers the private questions → auto-scored 89%
+        ↓
+Student B approves → identities unlock → handover in chat → RETURNED → CLOSED
 ```
 
 ---
 
-## Quick start (2 commands, no database to install)
+## 1. Quick start
+
+Requires **Node.js 18 or newer** (`node -v` to check). No database to install, no API keys.
 
 ```bash
-npm run setup          # installs backend + frontend dependencies
-npm run seed           # creates the SQLite database and the demo data
-npm start              # API + UI on http://localhost:4000
+# from the repo root
+npm install       # the concurrently helper
+npm run setup     # installs server + client deps, then seeds the demo database
+npm run dev       # API on :4000, Vite dev server on :5173
 ```
 
-Open <http://localhost:4000> and sign in with a demo account:
+Open **http://localhost:5173**.
 
-| Account | Password | Role in the demo |
+**Single-port demo mode** — the API serves the production build, so there's only one URL and one
+process to babysit while presenting:
+
+```bash
+npm run demo      # builds the client, then serves everything on http://localhost:4000
+```
+
+Anything went sideways? `npm run seed` resets the database to the clean demo story at any time.
+
+### Demo logins
+
+| Role | Email | Password |
 | --- | --- | --- |
-| `ananya@campus.edu` | `demo1234` | Lost the black wallet |
-| `rahul@campus.edu` | `demo1234` | Found the black wallet |
-| `admin@campus.edu` | `admin123` | Campus admin / moderator |
+| Owner (lost the wallet) | `aarav@college.edu` | `demo1234` |
+| Finder (found the wallet) | `priya@college.edu` | `demo1234` |
+| Other members | `rohit@` / `sneha@` / `kabir@` / `meera@college.edu` | `demo1234` |
+| Administrator | `admin@traceback.io` | `admin1234` |
 
-### Working on the frontend
+The login screen has one-click chips for the three key accounts, so nothing needs typing during a demo.
 
-```bash
-npm run dev:api        # Express on :4000 with auto-reload
-npm run dev:web        # Vite dev server on :5173 (proxies /api to :4000)
-```
-
-`npm start` rebuilds the UI and serves it from the API port, so a single process is enough for the
-demo. Use `npm run start:api` to skip the rebuild.
-
-> If `http://localhost:4000` ever returns JSON instead of the website, the UI has not been built —
-> run `npm run build` in the repository root. `npm run demo` asserts this too.
-
-### Windows notes
-
-**`npm : File ...\npm.ps1 cannot be loaded because running scripts is disabled`**
-PowerShell blocks npm's script shim. Any one of these fixes it:
-
-```powershell
-# a) run the commands from Command Prompt (cmd) instead of PowerShell, or
-npm.cmd run setup          # b) call the .cmd shim directly, or
-Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned   # c) permanent, no admin needed
-```
-
-**`npm install` fails building `better-sqlite3`**
-That native module has no prebuilt binary for every Node version on Windows, and building it from
-source needs the Microsoft C++ toolchain. You do not need it: it is an **optional** dependency, and
-the app automatically falls back to Node's built-in `node:sqlite` driver. Just carry on —
-`npm run seed && npm start` will work. `GET /api/health` reports which driver is active.
-
-On Node 22.x the built-in driver needs a flag, so if you also skipped the native module use:
+### Verify it end to end
 
 ```bash
-node --experimental-sqlite src/server.js     # from the backend/ folder
+cd server && node e2e-demo.mjs      # 44 assertions covering the whole judge walkthrough
 ```
 
-Node 23.4+ and 24+ need no flag. Node 20 and older need `better-sqlite3` to install successfully —
-upgrading to Node 22 LTS or newer is the simplest fix.
-
-**Site can't be reached at localhost:4000**
-The server is not running. Check the terminal where you ran `npm start`: it should print a banner
-ending in `URL : http://localhost:4000`. If it exited instead, the error above the prompt says why.
-Verify something is listening with `netstat -ano | findstr :4000`.
-
-### Full stack on PostgreSQL
-
-```bash
-docker compose up --build     # Postgres + API/UI + Python AI service
-```
+It registers fresh users, files both reports, checks the generated match score, submits a
+genuine claim **and** an impostor claim (89.5% vs 1.9%), approves, hands over, closes the case,
+exercises the admin console and asserts every access-control rule.
 
 ---
 
-## Verifying it actually works
-
-Three self-contained checks, all runnable before you present:
-
-```bash
-npm run demo      # 39 assertions over the whole REST journey (boots the API in-process)
-npm run test:ui   # drives the real UI in Chromium: 38 assertions, fails on any console error
-cd ai-service && .venv/bin/python -m pytest -q                        # AI service unit tests
-cd ai-service && .venv/bin/python ../scripts/ai-integration-check.py  # AI wiring + degradation
-```
-
-`npm run demo` prints the judge-facing walkthrough with the live score breakdown:
+## 2. Architecture
 
 ```
- 3. Rahul reports the found wallet - the engine runs immediately
-    ✓ a possible match was generated
-    ✓ score is a strong match (>= 75%) -> 87.3%
-    score breakdown:
-      Item / category similarity     87.6%  x 25%  ->  25.8 pts
-      Description similarity         70.6%  x 25%  ->  20.8 pts
-      Location similarity            98.8%  x 20%  ->  23.2 pts
-      Date / time proximity          99.4%  x 15%  ->  17.5 pts
-      Image similarity                  0%  x 15%  ->     0 pts  (skipped)
+                    ┌──────────────────────────────┐
+  USERS / ADMIN ──► │  FRONTEND — React + Vite     │
+                    │  cosmic design system (CSS)  │
+                    └──────────────┬───────────────┘
+                                   │  REST + JWT
+                    ┌──────────────▼───────────────┐
+                    │  BACKEND — Node + Express    │
+                    │  auth · items · matches ·    │
+                    │  claims · messages ·         │
+                    │  notifications · admin       │
+                    └───────┬──────────────┬───────┘
+                            │              │
+              ┌─────────────▼───┐   ┌──────▼──────────────────┐
+              │  SQLite (WAL)   │   │  Matching engine        │
+              │  6 core tables  │   │  5 weighted signals +   │
+              │  + settings     │   │  perceptual image hash  │
+              └─────────────────┘   └─────────────────────────┘
 ```
 
-`npm run test:ui` needs a browser once: `npx playwright install chromium`.
-Add `SHOTS=./.shots` to save a screenshot of every screen.
-
----
-
-## Architecture
-
-```
-          USERS / ADMIN
-                │
-                ▼
-      ┌─────────────────────┐
-      │  FRONTEND (React)   │   17 screens, Vite build
-      └──────────┬──────────┘
-                 │  REST + Socket.IO
-                 ▼
-      ┌─────────────────────┐
-      │  BACKEND (Express)  │   auth · items · matches · claims
-      │                     │   messages · notifications · admin
-      └───┬─────────────┬───┘
-          │             │
-          ▼             ▼
- ┌────────────────┐  ┌──────────────────────┐
- │  SQLite  /     │  │  Matching engine     │
- │  PostgreSQL    │  │  (+ optional Python  │
- │                │  │   AI service)        │
- └────────────────┘  └──────────────────────┘
-```
-
-| Layer | Technology | Notes |
+| Layer | Choice | Why |
 | --- | --- | --- |
-| Frontend | React 18, React Router, Material UI form controls, CSS-variable design system | cosmic dark theme by default (near-black + violet, glassmorphism, starfield), with a persisted light/dark switch |
-| Backend | Node.js 18+, Express 4 | modular: one folder per domain module |
-| Database | **SQLite by default, PostgreSQL when `DATABASE_URL` is set** | identical SQL, two schema files |
-| Auth | JWT + bcrypt, role based (`user` / `admin`) | optional college-domain restriction |
-| Realtime | Socket.IO | live notifications and chat |
-| Image storage | local disk, or Cloudinary via `STORAGE_DRIVER=cloudinary` | |
-| AI / ML | Python + FastAPI (sentence-transformers → TF-IDF → pure Python) | fully optional |
-| API style | REST, JSON | see [docs/API.md](docs/API.md) |
+| Frontend | React 18 + Vite + React Router | Fast HMR, zero-config build |
+| Styling | Hand-built CSS design system (tokens → components) | Full control of the cosmic glow theme, no framework weight |
+| Charts | Hand-rolled SVG | On-theme gradients, no chart dependency |
+| Backend | Node.js + Express (ESM) | Matches the problem statement's recommended stack |
+| Database | SQLite via `better-sqlite3` | Same SQL model as PostgreSQL, but **zero setup** — critical for a hackathon demo. Swappable: all queries are plain SQL |
+| Auth | JWT + bcrypt password hashing | Stateless, role-aware (`user` / `admin`) |
+| Images | `multer` upload + `sharp` 8×8 dHash | Real perceptual image similarity, computed locally |
 
-Deeper documentation:
-
-- [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) — module map, request lifecycle, design decisions
-- [docs/MATCHING.md](docs/MATCHING.md) — how the score is computed, with worked examples
-- [docs/DATABASE.md](docs/DATABASE.md) — tables, relationships, status lifecycles
-- [docs/API.md](docs/API.md) — every endpoint with request/response examples
-- [docs/DEMO-SCRIPT.md](docs/DEMO-SCRIPT.md) — the 3-minute presentation, keystroke by keystroke
-- [docs/SPEC-COVERAGE.md](docs/SPEC-COVERAGE.md) — every requirement mapped to the code that implements it
-
----
-
-## Feature highlights
-
-**Smart matching engine** (`backend/src/matching/`)
-Weighted score exactly as specified — item/category 25%, description 25%, location 20%,
-date/time 15%, image 15%. Factors that cannot be evaluated (no photos, AI service off) are marked
-*skipped* and their weight is **redistributed**, so a missing photo can never cap an otherwise
-perfect match. Every stored match keeps its full breakdown, and the UI shows *why* two reports
-matched.
-
-**Ownership verification** (`backend/src/modules/claims/`)
-The finder stores a private detail that the API **never returns to anyone**. A claimant must
-describe it; the API grades the answer automatically to assist the reviewer, but a human — the
-finder or an admin — always decides. Contact details unlock only after approval.
-
-**AI photo verification of claims**
-When the claimant uploads a proof photo and the report has one too, the Python service compares them
-(perceptual hash + colour profile) and the reviewer sees both images side by side with a similarity
-score, a plain-language verdict, and a combined confidence figure that weights the private-detail
-answer higher than the photo. Entirely advisory, and skipped silently when unavailable.
-
-**Cosmic dark theme**
-Near-black (`#0a0a0f`) with violet accents (`#8b5cf6` → `#a78bfa`), a fixed nebula-and-starfield
-backdrop, glassmorphism cards and pill buttons with a soft glow. Dark by default, with a light/dark
-switch in the header that persists across reloads. Every colour comes from CSS variables and the
-Material UI palette is generated from the same tokens, so the two themes never drift apart.
-
-**Item lifecycle**
-`REPORTED → POSSIBLE_MATCH → CLAIM_REQUESTED → VERIFICATION → RETURNED → CLOSED`, enforced
-server-side and rendered as a timeline on the item page.
-
-**Admin module**
-Analytics (resolution rate, category breakdown, location hotspots for a heatmap), user blocking
-and role changes, report moderation, a dispute queue over all claims, and an append-only audit log.
-
-**Advanced extras already built**
-Realtime notifications and chat over Socket.IO · optional college-email verification ·
-map coordinates with real distance scoring · semantic description matching and image similarity
-via the Python service · location hotspot analytics.
-
----
-
-## Configuration
-
-Everything has a working default; copy `backend/.env.example` to `backend/.env` to change anything.
-
-```ini
-PORT=4000
-JWT_SECRET=change-me-in-production
-ALLOWED_EMAIL_DOMAINS=          # e.g. campus.edu to restrict registration
-
-DB_CLIENT=sqlite                # sqlite | postgres
-DATABASE_URL=postgres://lostfound:lostfound@localhost:5432/lostfound
-
-STORAGE_DRIVER=local            # local | cloudinary
-
-MATCH_WEIGHT_CATEGORY=0.25      # tune the engine without touching code
-MATCH_WEIGHT_DESCRIPTION=0.25
-MATCH_WEIGHT_LOCATION=0.20
-MATCH_WEIGHT_TIME=0.15
-MATCH_WEIGHT_IMAGE=0.15
-MATCH_MIN_SCORE=45              # below this, no match row is stored
-MATCH_STRONG_SCORE=75           # at or above this, users get a "strong match" alert
-
-AI_SERVICE_ENABLED=false        # turn on the Python service
-AI_SERVICE_URL=http://localhost:8000
-```
-
-After changing weights, re-score the existing matches from the admin dashboard
-(**Matches → Re-score everything**) or `POST /api/matches/rescore`.
-
----
-
-## Repository layout
+### Repository layout
 
 ```
-lost-found-tracker/
-├── backend/                 Express API, matching engine, data layer
+traceback/
+├── server/
+│   ├── src/
+│   │   ├── index.js           Express app, static client, error handling
+│   │   ├── config.js          env + default engine weights
+│   │   ├── db.js              schema, indexes, live settings store
+│   │   ├── auth.js            JWT sign/verify, bcrypt, route guards
+│   │   ├── matching.js        ★ the matching engine + answer scoring
+│   │   ├── images.js          upload handling + dHash + seed artwork
+│   │   ├── services.js        status lifecycle, notifications, match runner, masking
+│   │   ├── constants.js       categories, locations, question templates
+│   │   ├── seed.js            full demo dataset
+│   │   └── routes/            auth · items · matches · claims · messages ·
+│   │                          notifications · admin · meta
+│   └── e2e-demo.mjs           end-to-end walkthrough test
+├── client/
 │   └── src/
-│       ├── config/          environment loading & validation
-│       ├── db/              dual-dialect layer, schemas, migrate, seed
-│       ├── matching/        similarity metrics, weighted engine, AI client
-│       ├── middleware/      auth, validation, uploads, error handling
-│       ├── modules/         auth · items · matches · claims · messages ·
-│       │                    notifications · admin  (service + routes each)
-│       ├── realtime/        Socket.IO hub
-│       └── utils/           shared constants and error helpers
-├── frontend/                React app (17 screens)
-│   └── src/{api,components,context,hooks,pages,utils}
-├── ai-service/              optional FastAPI semantic + image matching
-├── scripts/                 demo-flow · ui-smoke · ai-integration-check
-├── docs/                    architecture, API, database, matching, demo script
-├── deploy/Dockerfile.api    builds UI + API into one image
-└── docker-compose.yml       Postgres + API + AI service
+│       ├── styles/            tokens.css · base.css · components.css
+│       ├── components/        design-system primitives + layouts + charts
+│       ├── lib/               api client · auth context · formatters
+│       └── pages/             16 public + member screens, 7 admin screens
+└── verify-ui.sh               boots the app and screenshots every screen
 ```
 
 ---
 
-## Development order followed (spec section 14)
+## 3. The matching engine
 
-1. Database and API structure → 2. auth and roles → 3. reporting with image upload →
-4. search, filtering and item details → 5. matching algorithm → 6. claim and ownership
-verification → 7. admin dashboard and moderation → 8. notifications and UI polish →
-9. AI/image matching last, behind a flag.
+`server/src/matching.js` implements the weighting table from the problem statement exactly:
 
-The core flow was working before any AI was added — exactly the guidance in section 16 of the
-problem statement.
+| Factor | Weight | How it is computed |
+| --- | --- | --- |
+| Item / category similarity | **25%** | Category equality + title token overlap + character-bigram cosine |
+| Description similarity | **25%** | Synonym-normalised token overlap + Jaccard + bigram cosine, then calibrated |
+| Location similarity | **20%** | Location token overlap with a place-synonym lexicon (canteen ≈ cafeteria ≈ mess) |
+| Date / time proximity | **15%** | Exponential decay across a configurable window (default 14 days) |
+| Image similarity | **15%** | Hamming distance between 64-bit dHashes of the two photos |
+
+Design decisions worth pointing out in a demo:
+
+- **It never relies on an exact name.** "Redmi Note 12 with cracked screen guard" still matches
+  "Grey Android phone on library reading desk" at 83%.
+- **A synonym lexicon** collapses `phone ≈ mobile ≈ cell`, `wallet ≈ purse`, `canteen ≈ cafeteria`,
+  colour families, and campus place names.
+- **Free-text scores are calibrated.** Two people describing the *same* object typically share only
+  30–45% of their distinctive words, while unrelated text sits below 10%. A piecewise curve maps that
+  raw overlap onto a human-meaningful confidence value.
+- **Missing factors are dropped, not zeroed.** If neither report has a photo, the image weight is
+  removed and the remaining four weights are re-normalised, so scores stay comparable.
+- **Weights are live-tunable** from *Admin → Settings* (with a donut showing the distribution).
+- Every score ships with a **per-factor breakdown** and plain-English reasons, rendered as glowing
+  progress bars on the item, match and claim screens.
+
+### Ownership verification
+
+The finder stores private question/answer pairs. The API returns **only the questions** — the answers
+never leave the database. A claimant's answers are scored with the same text-similarity machinery, and
+the result is presented as an *advisory* auto-score. A human (finder or admin) always makes the call,
+and a rejected claimant can raise a dispute that lands in the admin queue.
+
+In the seeded demo the genuine owner scores **86%** while an impostor scores **31%**.
+
+---
+
+## 4. Data model
+
+| Table | Key fields |
+| --- | --- |
+| `users` | `id, name, email, password_hash, role, phone, campus, avatar_hue, status, created_at` |
+| `items` | `id, user_id, type(lost/found), title, category, description, location, item_date, image_url, image_hash, status, questions, is_flagged, created_at, updated_at` |
+| `matches` | `id, lost_item_id, found_item_id, match_score, breakdown, status` (unique per pair) |
+| `claims` | `id, item_id, match_id, claimant_id, proof, answer_score, stage, status, decided_by, decision_note` |
+| `messages` | `id, sender_id, receiver_id, item_id, message, read_status, created_at` |
+| `notifications` | `id, user_id, type, title, message, link, read_status, created_at` |
+| `disputes` | `id, claim_id, raised_by, reason, status, resolution` |
+| `settings` | live matching-engine configuration (`key`, `value`) |
+
+**Item lifecycle** — enforced server-side and never allowed to move backwards:
+
+```
+REPORTED → POSSIBLE MATCH → CLAIM REQUESTED → VERIFICATION → RETURNED → CLOSED
+```
+
+**Claim wizard stages:** `submitted → verification → review → handover → returned` (or `rejected`).
+
+---
+
+## 5. API reference
+
+All protected routes take `Authorization: Bearer <jwt>`.
+
+| Method | Endpoint | Purpose |
+| --- | --- | --- |
+| `POST` | `/api/auth/register` · `/login` | Create an account / sign in |
+| `GET` `PATCH` | `/api/auth/me` | Read / update the signed-in profile |
+| `POST` | `/api/auth/change-password` | Rotate a password |
+| `GET` | `/api/items` | Browse with `q, type, category, location, status, from, to, sort, mine` |
+| `POST` | `/api/items` | Create a report (multipart: fields + `photo` + `questions`) |
+| `GET` | `/api/items/:id` | Item + its matches + question prompts + my claim |
+| `PATCH` `DELETE` | `/api/items/:id` | Edit / delete your own report |
+| `POST` | `/api/items/:id/rescan` | Re-run the engine for that report |
+| `GET` | `/api/items/:id/compare/:otherId` | Live factor-by-factor explanation |
+| `GET` | `/api/matches` · `/api/matches/:id` | Your match pairs (with perspective) |
+| `POST` | `/api/matches/:id/reject` | "Not my item" |
+| `POST` | `/api/claims` | Open a claim |
+| `POST` | `/api/claims/:id/verify` | Submit + auto-score verification answers |
+| `POST` | `/api/claims/:id/decision` | Approve / reject (finder or admin) |
+| `POST` | `/api/claims/:id/handover` · `/close` | Mark RETURNED, then CLOSED |
+| `POST` | `/api/claims/:id/dispute` | Escalate a rejection |
+| `GET` `POST` | `/api/messages/threads` · `/thread/:userId` · `/` | Item-scoped chat |
+| `GET` `POST` | `/api/notifications` · `/:id/read` · `/read-all` | Alert centre |
+| `GET` | `/api/admin/overview` · `/analytics` | KPIs, trends, rates |
+| `GET` `PATCH` | `/api/admin/users` · `/items` · `/claims` · `/disputes` | Moderation |
+| `GET` `PUT` | `/api/admin/settings` | Live engine tuning |
+| `GET` | `/api/meta` · `/meta/stats` · `/meta/showcase` | Public metadata for the UI |
+
+**Privacy built into the API:** reporter names are returned masked (`Aa••• S.`), emails masked
+(`aa•••@college.edu`), phone numbers are never serialised, and private verification answers are
+excluded from every response. Identities unlock only once a claim is approved.
+
+---
+
+## 6. Screens
+
+**Public** — Landing (hero, live stats bar, 4-step flow, engine explainer, lifecycle stepper,
+recent reports), How It Works, Contact, Browse &amp; filter, Item details (photo, masked reporter,
+match ring + factor bars, claim CTA), Login, Register.
+
+**Member** — Dashboard (4 stat cards, recent activity, match previews, claims in flight),
+Report Lost / Found (3-step wizard with a live preview card and a match-strength checklist),
+My Reports (table + grid views), Possible Matches (paired cards with a glowing connector),
+Claims, Claim &amp; Verification wizard (stepper + timeline + review + handover), Messages,
+Notifications, Profile.
+
+**Admin** — Overview (KPIs, 14-day trend, moderation queue), Manage Users, Manage Items,
+Manage Claims (with an answer-review modal), Disputes, Analytics (line / bar / donut charts),
+Settings (live weight tuning).
+
+---
+
+## 7. Design system
+
+A dark, futuristic, cosmic theme: near-black canvas, soft purple nebula gradients, faint drifting
+stars and violet glow accents. Everything is driven by tokens in
+[`client/src/styles/tokens.css`](client/src/styles/tokens.css), so one edit re-themes the product.
+
+| Token group | Values |
+| --- | --- |
+| Surfaces | `#0a0a0f` base · `#151220` cards · glassmorphism `rgba(21,18,32,.72)` + 14px blur |
+| Accents | `#a78bfa` → `#c084fc`, deep `#4c1d95`; primary gradient `#8b5cf6 → #a855f7 → #c084fc` |
+| Text | `#f4f2ff` primary · `#cfc9e8` soft · `#9d94bd` dim · `#6f6790` faint |
+| Radii | 8 / 10 / **12** / **16** / 22 / pill |
+| Glow | `--glow-xs · sm · md · lg`, `--glow-accent`, `--ring-focus` |
+| Spacing | 4 · 8 · 12 · 16 · 20 · 24 · 32 · 40 · 48 · 64 · 80 |
+| Type | Space Grotesk (display) · Inter (body) · system mono |
+
+**Status badges** are colour-coded pills driven by CSS variables: Reported (blue-violet),
+Possible Match (amber-purple glow), Claim Requested (orange), Verification (yellow),
+Returned (green), Closed (grey), plus Lost (rose) / Found (teal) type badges.
+
+**Reusable components** (`client/src/components/ui.jsx`): `Button` (primary gradient / ghost /
+subtle / danger / success · 3 sizes · loading state), `StatusBadge`, `Badge`, `Tag`, `Card`,
+`CardHead`, `StatCard`, `MatchRing` (glowing circular progress), `FactorBars`, `Stepper`,
+`LifecycleStepper`, `ClaimStepper`, `Timeline`, `Avatar`, `Field`, `Input`, `Textarea`, `Select`,
+`Switch`, `ToggleGroup`, `PillSelect`, `Empty` (glowing magnifier orb), `Alert`, `Skeleton`,
+`Modal`, `ToastProvider`, `SectionTitle`, `ItemThumb` — plus `charts.jsx`
+(`LineChart`, `BarChart`, `DonutChart`, `Sparkline`) and `Icon.jsx`, a 53-glyph stroked SVG set.
+
+**Responsive behaviour** — sidebar → icon rail at ≤1024px → labelled bottom nav at ≤760px;
+cards stack; forms go single column; match pairs stack with the connector rotating to vertical;
+steppers scroll horizontally while keeping their glow; `prefers-reduced-motion` disables animation.
+
+Regenerate the full screenshot set (desktop, tablet, mobile) at any time:
+
+```bash
+./verify-ui.sh      # → .kiro/artifacts/screenshots/
+```
+
+---
+
+## 8. MVP vs advanced features
+
+| MVP (built) | Advanced (also built) |
+| --- | --- |
+| Login / register with roles | Perceptual **image similarity** matching (dHash) |
+| Report lost / found with photo upload | Synonym-aware **semantic-ish text matching** with calibration |
+| Search &amp; filter | In-app **chat** with item context, threaded per report |
+| Weighted match score | Live notification centre (bell panel + full page + polling) |
+| Claim verification | **Auto-scored** verification answers + dispute escalation |
+| Item status tracking | Admin **analytics** (trends, category donut, hotspots, funnel, resolution time) |
+| Admin dashboard | Live **engine tuning** from the admin console |
+
+Deliberately left out: college email verification (needs SMTP), WebSocket push (polling is used
+instead), map view (locations are a controlled vocabulary today).
+
+---
+
+## 9. Notes for judges / reviewers
+
+- `npm run seed` is idempotent — run it any time to reset to a clean, story-shaped dataset.
+- Seeded item artwork is generated locally as cosmic placeholder PNGs, so the demo needs **no
+  internet** and every photo has a real perceptual hash.
+- Try *Admin → Settings*: drop the description weight to 0, then re-scan a report from
+  *My Reports* and watch the score change — the engine is genuinely configuration-driven.
+- Every state has a designed empty state, loading skeleton and error toast; there are no dead ends.

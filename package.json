@@ -1,23 +1,24 @@
 {
-  "name": "lost-found-item-tracker",
+  "name": "traceback",
   "version": "1.0.0",
   "private": true,
-  "description": "Campus Lost & Found Tracker - Express API + matching engine + React UI + optional AI service",
+  "description": "TraceBack — AI-assisted Lost & Found Item Tracker (PCE SW PS 13)",
   "scripts": {
-    "setup": "npm --prefix backend install && npm --prefix frontend install && npm run build",
-    "seed": "npm --prefix backend run db:seed",
-    "dev:api": "npm --prefix backend run dev",
-    "dev:web": "npm --prefix frontend run dev",
-    "build": "npm --prefix frontend run build",
-    "start": "npm run build && npm --prefix backend start",
-    "start:api": "npm --prefix backend start",
-    "demo": "node scripts/demo-flow.js",
-    "test:ui": "node scripts/ui-smoke.mjs"
-  },
-  "devDependencies": {
-    "playwright-core": "^1.49.0"
+    "setup": "npm install --prefix server && npm install --prefix client && npm run seed",
+    "install:all": "npm install --prefix server && npm install --prefix client",
+    "dev": "concurrently -n API,WEB -c magenta,cyan \"npm run dev --prefix server\" \"npm run dev --prefix client\"",
+    "dev:server": "npm run dev --prefix server",
+    "dev:client": "npm run dev --prefix client",
+    "seed": "npm run seed --prefix server",
+    "build": "npm run build --prefix client",
+    "start": "npm start --prefix server",
+    "demo": "npm run build && npm start",
+    "test:e2e": "node server/e2e-demo.mjs"
   },
   "engines": {
     "node": ">=18"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.2"
   }
 }
