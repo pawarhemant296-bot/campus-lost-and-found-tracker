@@ -25,7 +25,20 @@ export function TextArea({ hint, rows = 4, ...props }) {
  */
 export function SelectField({ hint, options = [], placeholder, children, ...props }) {
   return (
-    <TextField select SelectProps={{ native: true }} helperText={hint} {...props}>
+    <TextField
+      select
+      SelectProps={{ native: true }}
+      /**
+       * A native <select> always renders its current option, including the
+       * placeholder one when the value is ''. Material only shrinks the label
+       * when it considers the field filled, so without this the label sits on
+       * top of the visible option text ("Category" over "All categories").
+       */
+      InputLabelProps={{ shrink: true }}
+      InputProps={{ notched: true }}
+      helperText={hint}
+      {...props}
+    >
       {placeholder !== undefined && <option value="">{placeholder}</option>}
       {options.map((option) => {
         const value = typeof option === 'string' ? option : option.value;

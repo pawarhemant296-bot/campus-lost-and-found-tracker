@@ -155,6 +155,16 @@ async function main() {
     check('keyword search returns wallet reports', walletCards > 0, `(${walletCards} cards)`);
     const muiInputs = await page.locator('.MuiOutlinedInput-root').count();
     check('filters use Material UI inputs', muiInputs >= 7, `(${muiInputs} MUI controls)`);
+
+    // Regression guard: a native select always shows an option, so its floating
+    // label must stay shrunk or the two texts overlap.
+    const selectFields = await page.locator('.MuiTextField-root:has(select)').count();
+    const shrunkLabels = await page.locator('.MuiTextField-root:has(select) label.MuiInputLabel-shrink').count();
+    check(
+      'select labels stay clear of the option text',
+      selectFields > 0 && shrunkLabels === selectFields,
+      `(${shrunkLabels}/${selectFields} shrunk)`,
+    );
     await shot('search');
 
     // ---- login ------------------------------------------------------------
