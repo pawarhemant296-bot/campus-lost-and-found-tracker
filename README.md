@@ -7,6 +7,8 @@
 TraceBack is a complete, working full-stack application — not a mockup. Every screen is wired
 to a real REST API, a real database and a real matching engine.
 
+**→ [See the full UI walkthrough (29 screenshots)](docs/SCREENSHOTS.md)**
+
 ```
 Student A loses a wallet → reports it
 Student B finds a wallet → reports it (+ private ownership questions)
@@ -272,7 +274,8 @@ subtle / danger / success · 3 sizes · loading state), `StatusBadge`, `Badge`, 
 cards stack; forms go single column; match pairs stack with the connector rotating to vertical;
 steppers scroll horizontally while keeping their glow; `prefers-reduced-motion` disables animation.
 
-Regenerate the full screenshot set (desktop, tablet, mobile) at any time:
+Every screen is captured in **[docs/SCREENSHOTS.md](docs/SCREENSHOTS.md)**. Regenerate the full set
+(desktop, tablet, mobile) at any time:
 
 ```bash
 ./verify-ui.sh      # → .kiro/artifacts/screenshots/
