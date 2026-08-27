@@ -350,8 +350,17 @@ weights re-normalise (the demo wallet pair scores 87% instead of 88%).
 
 ### Port 4000 is already in use
 
-Another app — likely an earlier version of this project — is still running. Stop it, or run
-TraceBack elsewhere: `PORT=4100 npm start` (`$env:PORT=4100; npm start` in PowerShell).
+Something else is listening there — most often an older version of this app still running in
+another terminal. Close that window, or start TraceBack elsewhere:
+
+```bash
+set PORT=4100 && npm start      # Windows (cmd)
+$env:PORT=4100; npm start       # Windows (PowerShell)
+PORT=4100 npm start             # macOS / Linux
+```
+
+Then open <http://localhost:4100>. The server prints these exact instructions when the port is
+taken, so you never get a bare stack trace.
 
 ### The UI looks like the old app after switching branches
 

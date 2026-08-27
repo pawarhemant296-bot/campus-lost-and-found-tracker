@@ -62,9 +62,34 @@ app.use((err, _req, res, _next) => {
   res.status(status).json({ error: err.message || 'Something went wrong' });
 });
 
-app.listen(config.port, () => {
+const server = app.listen(config.port, () => {
   console.log(`\n  ⟡ TraceBack API listening on http://localhost:${config.port}`);
   console.log(`    node ${process.versions.node} · sqlite driver: ${dbDriver}`);
   console.log(`    image similarity: ${hasSharp ? 'enabled (dHash)' : 'disabled (sharp not installed)'}`);
   console.log(`    database: ${config.dbFile}\n`);
+});
+
+// A stack trace for "port already taken" tells the user nothing useful.
+server.on('error', (err) => {
+  if (err.code !== 'EADDRINUSE') throw err;
+  const next = config.port + 100;
+  console.error(
+    [
+      '',
+      `  ✗ Port ${config.port} is already in use.`,
+      '',
+      '    Something else is listening there — most often an older version of this',
+      '    app still running in another terminal window.',
+      '',
+      '    Either close that window, or start TraceBack on a different port:',
+      '',
+      `      Windows (cmd)         set PORT=${next} && npm start`,
+      `      Windows (PowerShell)  $env:PORT=${next}; npm start`,
+      `      macOS / Linux         PORT=${next} npm start`,
+      '',
+      `    Then open http://localhost:${next}`,
+      '',
+    ].join('\n')
+  );
+  process.exit(1);
 });
