@@ -13,7 +13,9 @@
     "build": "npm run build --prefix client",
     "start": "npm start --prefix server",
     "demo": "npm run build && npm start",
-    "test:e2e": "node server/e2e-demo.mjs"
+    "test:e2e": "node server/e2e-demo.mjs",
+    "clean": "node -e \"const{rmSync}=require('fs');for(const p of ['server/node_modules','client/node_modules','client/dist'])rmSync(p,{recursive:true,force:true});console.log('cleaned: server/node_modules, client/node_modules, client/dist')\"",
+    "reset": "npm run clean && npm run setup"
   },
   "engines": {
     "node": ">=18"

@@ -42,7 +42,9 @@ process to babysit while presenting:
 npm run demo      # builds the client, then serves everything on http://localhost:4000
 ```
 
-Anything went sideways? `npm run seed` resets the database to the clean demo story at any time.
+Anything went sideways? `npm run seed` resets the database to the clean demo story, and
+`npm run reset` wipes `node_modules` and reinstalls from scratch. Both work identically in
+PowerShell, cmd and Git Bash.
 
 ### Demo logins
 
@@ -333,6 +335,13 @@ Want to skip the native builds entirely and silence the noise:
 
 ```bash
 npm install --omit=optional --prefix server
+```
+
+If an earlier install left a half-finished `node_modules`, start clean — this works in PowerShell,
+cmd and Git Bash alike, so there are no `rmdir` / `rm -rf` differences to worry about:
+
+```bash
+npm run reset      # deletes node_modules + client/dist, reinstalls, reseeds
 ```
 
 Verified: with **both** native modules absent, `npm run seed`, the server and all 44 end-to-end
