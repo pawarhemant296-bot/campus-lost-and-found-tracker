@@ -7,8 +7,6 @@
 TraceBack is a complete, working full-stack application — not a mockup. Every screen is wired
 to a real REST API, a real database and a real matching engine.
 
-**→ [See the full UI walkthrough (29 screenshots)](docs/SCREENSHOTS.md)**
-
 ```
 Student A loses a wallet → reports it
 Student B finds a wallet → reports it (+ private ownership questions)
@@ -24,7 +22,9 @@ Student B approves → identities unlock → handover in chat → RETURNED → C
 
 ## 1. Quick start
 
-Requires **Node.js 18 or newer** (`node -v` to check). No database to install, no API keys.
+Requires **Node.js 18 or newer** (`node -v` to check). No database to install, no API keys, and
+**no C++ compiler** — on Node 22.5+ the database runs on Node's built-in `node:sqlite`, so there is
+nothing to build on Windows, macOS or Linux.
 
 ```bash
 # from the repo root
@@ -95,7 +95,7 @@ exercises the admin console and asserts every access-control rule.
 | Styling | Hand-built CSS design system (tokens → components) | Full control of the cosmic glow theme, no framework weight |
 | Charts | Hand-rolled SVG | On-theme gradients, no chart dependency |
 | Backend | Node.js + Express (ESM) | Matches the problem statement's recommended stack |
-| Database | SQLite via `better-sqlite3` | Same SQL model as PostgreSQL, but **zero setup** — critical for a hackathon demo. Swappable: all queries are plain SQL |
+| Database | SQLite — built-in `node:sqlite`, or `better-sqlite3` if installed | Same SQL model as PostgreSQL, but **zero setup** — critical for a hackathon demo. Swappable: all queries are plain SQL |
 | Auth | JWT + bcrypt password hashing | Stateless, role-aware (`user` / `admin`) |
 | Images | `multer` upload + `sharp` 8×8 dHash | Real perceptual image similarity, computed locally |
 
@@ -274,8 +274,7 @@ subtle / danger / success · 3 sizes · loading state), `StatusBadge`, `Badge`, 
 cards stack; forms go single column; match pairs stack with the connector rotating to vertical;
 steppers scroll horizontally while keeping their glow; `prefers-reduced-motion` disables animation.
 
-Every screen is captured in **[docs/SCREENSHOTS.md](docs/SCREENSHOTS.md)**. Regenerate the full set
-(desktop, tablet, mobile) at any time:
+Regenerate the full screenshot set (desktop, tablet, mobile) at any time:
 
 ```bash
 ./verify-ui.sh      # → .kiro/artifacts/screenshots/
@@ -300,7 +299,58 @@ instead), map view (locations are a controlled vocabulary today).
 
 ---
 
-## 9. Notes for judges / reviewers
+## 9. Troubleshooting
+
+### `npm install` fails building `better-sqlite3` (Windows, "Could not find any Visual Studio installation")
+
+**You can ignore it — the app still runs.** `better-sqlite3` and `sharp` are declared as
+*optional* dependencies precisely so a missing C++ toolchain cannot stop the install. Just continue:
+
+```bash
+npm run seed
+npm run demo
+```
+
+Why it happens: `better-sqlite3` is a native addon. If npm can't find a prebuilt binary for your
+exact Node version and platform (common on brand-new Node releases), it tries to compile from
+source, which needs Visual Studio Build Tools plus Python.
+
+What TraceBack does instead — [`server/src/sqlite.js`](server/src/sqlite.js) picks a driver at boot:
+
+| Your Node | Driver used | Needs a compiler? |
+| --- | --- | --- |
+| 22.5 or newer | **`node:sqlite`** (built into Node) | No |
+| 18 – 22.4 | `better-sqlite3` | Only if no prebuilt binary exists |
+
+Confirm which one you got — the server prints it at boot and `/api/health` reports it:
+
+```bash
+curl http://localhost:4000/api/health
+# {"sqlite_driver":"node:sqlite","image_similarity":true, ...}
+```
+
+Want to skip the native builds entirely and silence the noise:
+
+```bash
+npm install --omit=optional --prefix server
+```
+
+Verified: with **both** native modules absent, `npm run seed`, the server and all 44 end-to-end
+assertions still pass. Image similarity is simply dropped from the score and the remaining four
+weights re-normalise (the demo wallet pair scores 87% instead of 88%).
+
+### Port 4000 is already in use
+
+Another app — likely an earlier version of this project — is still running. Stop it, or run
+TraceBack elsewhere: `PORT=4100 npm start` (`$env:PORT=4100; npm start` in PowerShell).
+
+### The UI looks like the old app after switching branches
+
+Hard-refresh to clear the cached bundle: `Ctrl+Shift+R` (`Cmd+Shift+R` on macOS).
+
+---
+
+## 10. Notes for judges / reviewers
 
 - `npm run seed` is idempotent — run it any time to reset to a clean, story-shaped dataset.
 - Seeded item artwork is generated locally as cosmic placeholder PNGs, so the demo needs **no

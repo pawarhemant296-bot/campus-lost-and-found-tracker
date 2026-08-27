@@ -3,7 +3,7 @@ import cors from 'cors';
 import fs from 'node:fs';
 import path from 'node:path';
 import { config, ROOT } from './config.js';
-import { db } from './db.js';
+import { db, dbDriver } from './db.js';
 import { optionalAuth } from './auth.js';
 import { hasSharp } from './images.js';
 
@@ -28,6 +28,8 @@ app.get('/api/health', (_req, res) => {
   res.json({
     status: 'ok',
     service: 'traceback-api',
+    node: process.versions.node,
+    sqlite_driver: dbDriver,
     image_similarity: hasSharp,
     users: db.prepare('SELECT COUNT(*) AS c FROM users').get().c,
     items: db.prepare('SELECT COUNT(*) AS c FROM items').get().c,
@@ -62,6 +64,7 @@ app.use((err, _req, res, _next) => {
 
 app.listen(config.port, () => {
   console.log(`\n  ⟡ TraceBack API listening on http://localhost:${config.port}`);
-  console.log(`    image similarity: ${hasSharp ? 'enabled (dHash)' : 'disabled'}`);
+  console.log(`    node ${process.versions.node} · sqlite driver: ${dbDriver}`);
+  console.log(`    image similarity: ${hasSharp ? 'enabled (dHash)' : 'disabled (sharp not installed)'}`);
   console.log(`    database: ${config.dbFile}\n`);
 });

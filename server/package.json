@@ -10,14 +10,20 @@
     "start": "node src/index.js",
     "seed": "node src/seed.js"
   },
+  "engines": {
+    "node": ">=18"
+  },
   "dependencies": {
     "bcryptjs": "^2.4.3",
-    "better-sqlite3": "^11.7.0",
     "cors": "^2.8.5",
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
     "jsonwebtoken": "^9.0.2",
-    "multer": "^2.2.0",
+    "multer": "^2.2.0"
+  },
+  "comment:optionalDependencies": "Install failures here are non-fatal by design. SQLite falls back to the built-in node:sqlite module (Node 22.5+), and image similarity is simply skipped when sharp is unavailable — so no C++ toolchain is ever required.",
+  "optionalDependencies": {
+    "better-sqlite3": "^13.0.3",
     "sharp": "^0.35.4"
   }
 }

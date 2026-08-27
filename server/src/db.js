@@ -1,12 +1,13 @@
-import Database from 'better-sqlite3';
 import fs from 'node:fs';
 import path from 'node:path';
 import { config, DEFAULT_SETTINGS } from './config.js';
+import { openDatabase } from './sqlite.js';
 
 fs.mkdirSync(path.dirname(config.dbFile), { recursive: true });
 fs.mkdirSync(config.uploadDir, { recursive: true });
 
-export const db = new Database(config.dbFile);
+export const db = openDatabase(config.dbFile);
+export const dbDriver = db.driver;
 db.pragma('journal_mode = WAL');
 db.pragma('foreign_keys = ON');
 

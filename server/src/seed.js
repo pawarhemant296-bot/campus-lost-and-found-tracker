@@ -23,6 +23,7 @@ const sqlDate = (msAgo) => new Date(now - msAgo).toISOString().slice(0, 19).repl
 
 /* ------------------------------------------------------------------- reset */
 
+console.log(`⟡ node ${process.versions.node} · sqlite driver: ${db.driver}`);
 console.log('⟡ resetting database…');
 db.pragma('foreign_keys = OFF');
 for (const t of ['disputes', 'notifications', 'messages', 'claims', 'matches', 'items', 'users']) {
