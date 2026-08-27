@@ -42,6 +42,11 @@ export default function Layout() {
 
           {/* Browsing links only - reporting is the primary action button below. */}
           <nav className={`nav${menuOpen ? ' open' : ''}`} onClick={close}>
+            {/* On phones the header CTA is hidden to save space, so the same
+                action appears here instead. */}
+            <NavLink className="nav-mobile-only" to={user ? '/report/lost' : '/register'}>
+              {user ? '+ Report item' : 'Get started'}
+            </NavLink>
             <NavLink to="/search">Search</NavLink>
             {user ? (
               <>

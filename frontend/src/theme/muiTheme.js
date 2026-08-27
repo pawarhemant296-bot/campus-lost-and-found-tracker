@@ -6,12 +6,12 @@ import { createTheme } from '@mui/material/styles';
  */
 const tokens = {
   dark: {
-    background: '#141b2e',
-    backgroundAlt: '#1b2338',
-    text: '#e9edf8',
-    muted: '#9aa6c0',
-    border: '#2a3450',
-    brand: '#8b9bff',
+    background: '#14111f',
+    backgroundAlt: '#1a1628',
+    text: '#f5f3ff',
+    muted: '#9d94b8',
+    border: '#2b2340',
+    brand: '#a78bfa',
     error: '#f87171',
     success: '#34d399',
     warning: '#fbbf24',
@@ -23,7 +23,7 @@ const tokens = {
     text: '#0f172a',
     muted: '#64748b',
     border: '#e2e8f0',
-    brand: '#3f4fd8',
+    brand: '#7c3aed',
     error: '#dc2626',
     success: '#059669',
     warning: '#b45309',

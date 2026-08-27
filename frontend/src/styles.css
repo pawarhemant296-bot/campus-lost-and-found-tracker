@@ -16,11 +16,11 @@
   --text: #0f172a;
   --muted: #64748b;
 
-  --brand: #3f4fd8;
-  --brand-dark: #2f3bb0;
-  --brand-soft: #eef0ff;
-  --brand-text: #2f3bb0;
-  --brand-border: #c7d2fe;
+  --brand: #7c3aed;
+  --brand-dark: #6d28d9;
+  --brand-soft: #f3f0ff;
+  --brand-text: #6d28d9;
+  --brand-border: #ddd6fe;
 
   --lost: #dc2626;
   --lost-soft: #fee2e2;
@@ -43,8 +43,15 @@
   --info-border: #bae6fd;
 
   --header-bg: rgba(255, 255, 255, 0.92);
-  --thumb-bg: linear-gradient(135deg, #eef2ff, #f8fafc);
-  --hero-bg: linear-gradient(150deg, #1e2464 0%, #3f4fd8 55%, #7c3aed 100%);
+  --thumb-bg: linear-gradient(135deg, #f3f0ff, #f8fafc);
+  --hero-bg: linear-gradient(150deg, #1a1033 0%, #5b21b6 52%, #7c3aed 100%);
+
+  /* Primary buttons are always a violet gradient with a soft glow. */
+  --btn-bg: linear-gradient(135deg, #7c3aed, #8b5cf6);
+  --btn-bg-hover: linear-gradient(135deg, #6d28d9, #7c3aed);
+  --btn-glow: 0 6px 18px rgba(124, 58, 237, 0.3);
+  --btn-glow-hover: 0 10px 26px rgba(124, 58, 237, 0.45);
+  --glow: 0 0 18px rgba(124, 58, 237, 0.25);
 
   --radius: 14px;
   --radius-sm: 9px;
@@ -53,46 +60,92 @@
   --header-h: 68px;
 }
 
+/* Cosmic dark theme: near-black base, violet accents, soft glow. */
 [data-theme='dark'] {
-  --bg: #0b1020;
-  --surface: #141b2e;
-  --surface-2: #1b2338;
-  --border: #2a3450;
-  --text: #e9edf8;
-  --muted: #9aa6c0;
+  --bg: #0a0a0f;
+  --surface: #14111f;
+  --surface-2: #1a1628;
+  --border: #2b2340;
+  --text: #f5f3ff;
+  --muted: #9d94b8;
 
-  --brand: #8b9bff;
-  --brand-dark: #6f81ff;
-  --brand-soft: #1e2649;
-  --brand-text: #b9c3ff;
-  --brand-border: #38446e;
+  --brand: #a78bfa;
+  --brand-dark: #8b5cf6;
+  --brand-soft: #1f1836;
+  --brand-text: #c4b5fd;
+  --brand-border: #3f3268;
 
   --lost: #f87171;
-  --lost-soft: #33191d;
+  --lost-soft: #2f1620;
   --lost-text: #fca5a5;
-  --lost-border: #5b2328;
+  --lost-border: #5a2333;
 
   --found: #34d399;
-  --found-soft: #0f2f27;
+  --found-soft: #10291f;
   --found-text: #6ee7b7;
-  --found-border: #1c5647;
+  --found-border: #1c5140;
 
   --warn: #fbbf24;
-  --warn-soft: #332813;
+  --warn-soft: #2e2412;
   --warn-text: #fcd34d;
-  --warn-border: #5c4517;
+  --warn-border: #574019;
 
   --info: #38bdf8;
-  --info-soft: #0e2c40;
+  --info-soft: #10253c;
   --info-text: #7dd3fc;
-  --info-border: #1c4b66;
+  --info-border: #1d4463;
 
-  --header-bg: rgba(11, 16, 32, 0.88);
-  --thumb-bg: linear-gradient(135deg, #1d2540, #141b2e);
-  --hero-bg: linear-gradient(150deg, #0d1230 0%, #2b3391 55%, #5b21b6 100%);
+  --header-bg: rgba(10, 10, 15, 0.86);
+  --thumb-bg: linear-gradient(135deg, #241a3d, #14111f);
+  /* Mostly black with violet nebula light, rather than a bright purple slab. */
+  --hero-bg:
+    radial-gradient(880px 520px at 76% 28%, rgba(139, 92, 246, 0.34), transparent 62%),
+    radial-gradient(620px 420px at 12% 82%, rgba(109, 40, 217, 0.26), transparent 62%),
+    radial-gradient(1px 1px at 22% 24%, rgba(255, 255, 255, 0.8), transparent 100%),
+    radial-gradient(1px 1px at 64% 68%, rgba(196, 181, 253, 0.75), transparent 100%),
+    radial-gradient(1.4px 1.4px at 84% 18%, rgba(255, 255, 255, 0.7), transparent 100%),
+    linear-gradient(160deg, #120c22 0%, #0a0a0f 62%);
 
-  --shadow: 0 1px 2px rgba(0, 0, 0, 0.4), 0 10px 28px rgba(0, 0, 0, 0.35);
-  --shadow-lg: 0 16px 48px rgba(0, 0, 0, 0.55);
+  /* Violet-tinted elevation instead of plain black shadow. */
+  --shadow: 0 1px 2px rgba(0, 0, 0, 0.45), 0 10px 28px rgba(76, 29, 149, 0.28);
+  --shadow-lg: 0 18px 52px rgba(76, 29, 149, 0.42);
+  --glow: 0 0 22px rgba(139, 92, 246, 0.42);
+
+  --btn-bg: linear-gradient(135deg, #8b5cf6, #a78bfa);
+  --btn-bg-hover: linear-gradient(135deg, #7c3aed, #8b5cf6);
+  --btn-glow: 0 6px 20px rgba(139, 92, 246, 0.42);
+  --btn-glow-hover: 0 12px 30px rgba(139, 92, 246, 0.58);
+}
+
+/* Nebula wash + star texture behind the whole app in dark mode. Fixed, so it
+   stays put while content scrolls, and pointer-events:none so it never
+   intercepts clicks. */
+[data-theme='dark'] body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(1000px 620px at 82% -8%, rgba(139, 92, 246, 0.2), transparent 62%),
+    radial-gradient(760px 520px at 2% 12%, rgba(109, 40, 217, 0.16), transparent 60%),
+    radial-gradient(900px 700px at 55% 108%, rgba(139, 92, 246, 0.12), transparent 64%);
+}
+
+[data-theme='dark'] body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  opacity: 0.5;
+  /* Three sizes of "stars" from tiny repeating radial gradients. */
+  background-image:
+    radial-gradient(1px 1px at 20% 30%, rgba(255, 255, 255, 0.9), transparent 100%),
+    radial-gradient(1px 1px at 70% 60%, rgba(196, 181, 253, 0.8), transparent 100%),
+    radial-gradient(1.5px 1.5px at 45% 80%, rgba(255, 255, 255, 0.7), transparent 100%),
+    radial-gradient(1px 1px at 88% 15%, rgba(255, 255, 255, 0.65), transparent 100%);
+  background-size: 340px 340px, 470px 470px, 610px 610px, 250px 250px;
 }
 
 /* Respect the OS preference before the user has chosen explicitly. */
@@ -296,34 +349,46 @@ code, pre, .mono {
   align-items: center;
   justify-content: center;
   gap: 7px;
-  padding: 9px 16px;
-  border-radius: var(--radius-sm);
+  padding: 10px 20px;
+  /* Pill shaped, matching the cosmic look. */
+  border-radius: 999px;
   border: 1px solid transparent;
-  background: var(--brand);
+  background: var(--btn-bg);
   color: #fff;
   font: inherit;
   font-weight: 600;
   font-size: 0.9rem;
   cursor: pointer;
-  transition: transform 0.06s ease, background 0.15s ease, box-shadow 0.15s ease;
+  box-shadow: var(--btn-glow);
+  transition: transform 0.14s ease, background 0.18s ease, box-shadow 0.2s ease, border-color 0.18s ease;
   text-decoration: none;
 }
-.btn:hover { background: var(--brand-dark); text-decoration: none; }
+.btn:hover {
+  background: var(--btn-bg-hover);
+  box-shadow: var(--btn-glow-hover);
+  transform: translateY(-1px);
+  text-decoration: none;
+}
 .btn:active { transform: translateY(1px); }
-.btn:disabled { opacity: 0.55; cursor: not-allowed; }
+.btn:disabled { opacity: 0.55; cursor: not-allowed; box-shadow: none; transform: none; }
 
 .btn-ghost {
   background: var(--surface);
   color: var(--text);
   border-color: var(--border);
+  box-shadow: none;
 }
-.btn-ghost:hover { background: var(--surface-2); }
+.btn-ghost:hover {
+  background: var(--surface-2);
+  border-color: var(--brand-border);
+  box-shadow: none;
+}
 
-.btn-danger { background: var(--lost); }
-.btn-danger:hover { background: #b91c1c; }
+.btn-danger { background: var(--lost); box-shadow: 0 6px 18px rgba(220, 38, 38, 0.28); }
+.btn-danger:hover { background: #b91c1c; box-shadow: 0 10px 26px rgba(220, 38, 38, 0.4); }
 
-.btn-success { background: var(--found); }
-.btn-success:hover { background: #047857; }
+.btn-success { background: var(--found); box-shadow: 0 6px 18px rgba(5, 150, 105, 0.28); }
+.btn-success:hover { background: #047857; box-shadow: 0 10px 26px rgba(5, 150, 105, 0.4); }
 
 .btn-sm { padding: 6px 11px; font-size: 0.82rem; }
 .btn-lg { padding: 12px 22px; font-size: 1rem; }
@@ -369,6 +434,64 @@ code, pre, .mono {
   text-transform: uppercase;
   letter-spacing: 0.05em;
   font-weight: 600;
+}
+
+/* The semantic lost/found buttons keep their meaning but use deeper tones in
+   dark mode - the light-theme reds and greens read as neon against the violet. */
+[data-theme='dark'] .btn-danger {
+  background: linear-gradient(135deg, #b91c1c, #dc2626);
+  box-shadow: 0 6px 20px rgba(185, 28, 28, 0.34);
+}
+[data-theme='dark'] .btn-danger:hover {
+  background: linear-gradient(135deg, #991b1b, #b91c1c);
+  box-shadow: 0 10px 28px rgba(185, 28, 28, 0.48);
+}
+[data-theme='dark'] .btn-success {
+  background: linear-gradient(135deg, #047857, #059669);
+  box-shadow: 0 6px 20px rgba(4, 120, 87, 0.34);
+}
+[data-theme='dark'] .btn-success:hover {
+  background: linear-gradient(135deg, #065f46, #047857);
+  box-shadow: 0 10px 28px rgba(4, 120, 87, 0.48);
+}
+
+/* Glassmorphism in dark mode: translucent surfaces over the nebula, with a
+   violet edge on hover. Kept out of the base rules so the light theme stays a
+   clean, opaque white. */
+[data-theme='dark'] .card,
+[data-theme='dark'] .stat,
+[data-theme='dark'] .item-card,
+[data-theme='dark'] .dropdown,
+[data-theme='dark'] .toast {
+  background: rgba(255, 255, 255, 0.038);
+  backdrop-filter: blur(14px);
+  border-color: var(--border);
+}
+
+[data-theme='dark'] .card:hover,
+[data-theme='dark'] .stat:hover {
+  border-color: var(--brand-border);
+}
+
+[data-theme='dark'] .item-card:hover {
+  border-color: var(--brand-border);
+  box-shadow: var(--shadow-lg), var(--glow);
+}
+
+/* The dropdown floats over content, so it needs a solid backing. */
+[data-theme='dark'] .dropdown,
+[data-theme='dark'] .dropdown-head {
+  background: rgba(20, 17, 31, 0.97);
+}
+
+[data-theme='dark'] .stat-value,
+[data-theme='dark'] .score-ring {
+  text-shadow: 0 0 18px rgba(167, 139, 250, 0.35);
+}
+
+/* Section headings pick up a subtle violet glow. */
+[data-theme='dark'] .page-head h1 {
+  text-shadow: 0 0 24px rgba(139, 92, 246, 0.28);
 }
 
 /* --- badges -------------------------------------------------------------- */
@@ -771,9 +894,45 @@ table.data tbody tr:hover { background: var(--surface-2); }
 /* --- landing ------------------------------------------------------------- */
 
 .hero {
+  position: relative;
+  overflow: hidden;
   background: var(--hero-bg);
+  background-size:
+    auto, auto,
+    280px 280px, 380px 380px, 220px 220px,
+    auto;
   color: #fff;
   padding: 62px 0 74px;
+}
+
+/* Glowing orb of light on the right - the "guardian" motif, drawn in CSS. */
+[data-theme='dark'] .hero::after {
+  content: '';
+  position: absolute;
+  right: -80px;
+  top: 50%;
+  width: 440px;
+  height: 440px;
+  transform: translateY(-50%);
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    rgba(237, 233, 254, 0.5) 0%,
+    rgba(167, 139, 250, 0.32) 26%,
+    rgba(139, 92, 246, 0.16) 48%,
+    transparent 70%
+  );
+  pointer-events: none;
+  animation: hero-orb 9s ease-in-out infinite;
+}
+
+@keyframes hero-orb {
+  0%, 100% { opacity: 0.75; transform: translateY(-50%) scale(1); }
+  50% { opacity: 1; transform: translateY(-52%) scale(1.05); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-theme='dark'] .hero::after { animation: none; }
 }
 .hero h1 {
   font-size: clamp(2rem, 4.4vw, 3rem);
@@ -789,8 +948,16 @@ table.data tbody tr:hover { background: var(--surface-2); }
   margin-top: 26px;
   max-width: 540px;
 }
-/* Always a light field on the coloured hero, in both themes, so the typed text
-   is legible against it. */
+/* Flex items default to min-width:auto, so the Material control refused to
+   shrink below its intrinsic width and pushed the page sideways on phones. */
+.hero-search .MuiFormControl-root {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+.hero-search .btn {
+  flex-shrink: 0;
+}
+/* Light theme: a white field on the violet hero. */
 .hero-search .MuiOutlinedInput-root {
   background: #ffffff;
 }
@@ -806,12 +973,33 @@ table.data tbody tr:hover { background: var(--surface-2); }
   border-color: transparent;
 }
 
+/* Dark theme: a glass field with a violet edge, so it belongs to the night sky
+   instead of punching a white hole in it. */
+[data-theme='dark'] .hero-search .MuiOutlinedInput-root {
+  background: rgba(255, 255, 255, 0.07);
+  backdrop-filter: blur(10px);
+}
+[data-theme='dark'] .hero-search .MuiOutlinedInput-input {
+  color: #f5f3ff;
+}
+[data-theme='dark'] .hero-search .MuiOutlinedInput-input::placeholder {
+  color: rgba(245, 243, 255, 0.55);
+}
+[data-theme='dark'] .hero-search fieldset {
+  border-color: rgba(167, 139, 250, 0.4);
+}
+
+/* Five figures on one row - auto-fit used to orphan the last one. */
 .hero-stats {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-  gap: 14px;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 12px;
   margin-top: 34px;
-  max-width: 620px;
+  max-width: 760px;
+}
+
+@media (max-width: 760px) {
+  .hero-stats { grid-template-columns: repeat(2, 1fr); }
 }
 .hero-stat {
   background: rgba(255, 255, 255, 0.12);
@@ -956,8 +1144,18 @@ table.data tbody tr:hover { background: var(--surface-2); }
   .detail-layout, .chat-layout { grid-template-columns: 1fr; }
 }
 
+.nav-mobile-only { display: none; }
+
 @media (max-width: 760px) {
   .nav-toggle { display: inline-flex; }
+  .nav-mobile-only { display: block; }
+
+  /* Keep the header to brand + burger + essentials; the primary action and the
+     user's name move into the menu so nothing overflows on a phone. */
+  .header-inner { gap: 10px; }
+  .header-actions { gap: 8px; }
+  .header-actions > .btn:not(.btn-ghost) { display: none; }
+  .user-chip { display: none; }
   .nav {
     display: none;
     position: absolute;

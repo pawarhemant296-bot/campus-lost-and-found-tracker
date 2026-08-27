@@ -136,7 +136,7 @@ Add `SHOTS=./.shots` to save a screenshot of every screen.
 
 | Layer | Technology | Notes |
 | --- | --- | --- |
-| Frontend | React 18, React Router, Material UI form controls, CSS-variable design system | dark theme by default, with a persisted light/dark switch |
+| Frontend | React 18, React Router, Material UI form controls, CSS-variable design system | cosmic dark theme by default (near-black + violet, glassmorphism, starfield), with a persisted light/dark switch |
 | Backend | Node.js 18+, Express 4 | modular: one folder per domain module |
 | Database | **SQLite by default, PostgreSQL when `DATABASE_URL` is set** | identical SQL, two schema files |
 | Auth | JWT + bcrypt, role based (`user` / `admin`) | optional college-domain restriction |
@@ -176,9 +176,11 @@ When the claimant uploads a proof photo and the report has one too, the Python s
 score, a plain-language verdict, and a combined confidence figure that weights the private-detail
 answer higher than the photo. Entirely advisory, and skipped silently when unavailable.
 
-**Dark theme**
-Dark by default, with a light/dark switch in the header that persists across reloads. All colours
-come from CSS variables, and the Material UI palette is generated from the same tokens.
+**Cosmic dark theme**
+Near-black (`#0a0a0f`) with violet accents (`#8b5cf6` → `#a78bfa`), a fixed nebula-and-starfield
+backdrop, glassmorphism cards and pill buttons with a soft glow. Dark by default, with a light/dark
+switch in the header that persists across reloads. Every colour comes from CSS variables and the
+Material UI palette is generated from the same tokens, so the two themes never drift apart.
 
 **Item lifecycle**
 `REPORTED → POSSIBLE_MATCH → CLAIM_REQUESTED → VERIFICATION → RETURNED → CLOSED`, enforced
