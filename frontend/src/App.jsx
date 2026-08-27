@@ -22,9 +22,12 @@ import Search from './pages/Search.jsx';
 export default function App() {
   return (
     <Routes>
+      {/* The marketing landing page owns its own navigation, footer and
+          palette, so it sits outside the application shell. */}
+      <Route path="/" element={<Landing />} />
+
       <Route element={<Layout />}>
         {/* public */}
-        <Route path="/" element={<Landing />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/search" element={<Search />} />

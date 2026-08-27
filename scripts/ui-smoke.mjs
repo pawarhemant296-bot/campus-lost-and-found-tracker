@@ -148,18 +148,73 @@ async function main() {
       );
     };
 
-    // ---- landing ----------------------------------------------------------
-    console.log('\n3. Landing page');
+    // ---- cosmic landing page ----------------------------------------------
+    console.log('\n3. Landing page (FindIt cosmic design)');
     await goto('/');
-    check('hero headline rendered', await page.locator('h1').first().isVisible());
-    check('live statistics loaded', (await page.locator('.hero-stat').count()) >= 4);
-    check('latest reports listed', (await page.locator('.item-card').count()) > 0);
-    await page.fill('.hero-search input', 'black wallet');
-    await checkLegibility('hero search');
+
+    const headline = await page.locator('.c-hero h1').innerText();
+    check('two-tone hero headline', /lost something/i.test(headline) && /find it/i.test(headline), `("${headline.replace(/\n/g, ' / ')}")`);
+    check('tagline present', (await page.locator('.c-hero-tagline').innerText()).includes('Recover'));
+    check('guardian hero artwork rendered', await page.locator('.c-hero-visual svg').first().isVisible());
+
+    const cosmicBg = await page.evaluate(() => getComputedStyle(document.querySelector('.cosmic')).backgroundColor);
+    check('near-black cosmic palette', cosmicBg === 'rgb(10, 10, 15)', `(${cosmicBg})`);
+
+    check('navbar has the six section links', (await page.locator('.c-nav-links a').count()) === 6, `(${await page.locator('.c-nav-links a').count()})`);
+    check('Report Now pill present', await page.locator('.c-nav .c-btn-primary').isVisible());
+    check('stat bar shows four figures', (await page.locator('.c-statbar .c-stat').count()) === 4);
+    check('about checklist has four items', (await page.locator('#about .c-checklist li').count()) === 4);
+    check('five service cards', (await page.locator('#services .c-service').count()) === 5);
+    check('four impact cards with charts', (await page.locator('.c-result svg').count()) === 4);
+    check('four story tiles', (await page.locator('.c-story').count()) === 4);
+    check('closing CTA banner rendered', await page.locator('.c-cta').isVisible());
+    check('footer columns rendered', (await page.locator('.c-footer-grid > *').count()) === 5);
     await shot('landing');
 
+    // Newsletter is the only native input on this page - check it is legible.
+    await page.fill('.c-newsletter input', 'someone@campus.edu');
+    await checkLegibility('newsletter signup');
+
+    // In-page anchors must actually move the viewport.
+    await page.locator('.c-nav-links a[href="#how-it-works"]').click();
+    await page.waitForTimeout(700);
+    const scrolled = await page.evaluate(() => window.scrollY);
+    check('anchor links jump to their section', scrolled > 200, `(scrollY ${Math.round(scrolled)})`);
+
+    // Story tiles are real filtered searches, not decoration.
+    await goto('/');
+    await page.locator('.c-story').nth(1).click();
+    await page.waitForURL('**/search**');
+    check('story tile opens a filtered search', page.url().includes('category='), page.url().replace(BASE, ''));
+
+    // ---- responsive landing ------------------------------------------------
+    console.log('\n3a. Landing page on a phone (390x844)');
+    await page.setViewportSize({ width: 390, height: 844 });
+    await goto('/');
+    check('burger menu replaces the link row', await page.locator('.c-nav-toggle').isVisible());
+    check('desktop link row is hidden', !(await page.locator('.c-nav-links').isVisible()));
+
+    await page.locator('.c-nav-toggle').click();
+    await page.waitForTimeout(300);
+    check('burger opens the link row', await page.locator('.c-nav-links').isVisible());
+    await page.locator('.c-nav-toggle').click();
+    await page.waitForTimeout(250);
+
+    const overflow = await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);
+    check('no horizontal overflow', overflow <= 1, `(${overflow}px)`);
+
+    const stacked = await page.evaluate(() => {
+      const cards = [...document.querySelectorAll('#services .c-service')];
+      return cards.length > 1 && cards[0].getBoundingClientRect().top !== cards[1].getBoundingClientRect().top;
+    });
+    check('service cards stack vertically', stacked);
+    await shot('landing-mobile');
+
+    await page.setViewportSize({ width: 1360, height: 900 });
+
     // ---- theme ------------------------------------------------------------
-    console.log('\n3b. Dark theme and the theme switch');
+    console.log('\n3b. Dark theme and the theme switch (app shell)');
+    await goto('/search');
     check('dark theme is the default', (await page.getAttribute('html', 'data-theme')) === 'dark');
     const bodyBg = await page.evaluate(() => getComputedStyle(document.body).backgroundColor);
     check('body paints the dark background', bodyBg === 'rgb(11, 16, 32)', `(${bodyBg})`);
@@ -167,7 +222,7 @@ async function main() {
     await page.click('[data-testid=theme-toggle]');
     await page.waitForTimeout(350);
     check('toggle switches to light', (await page.getAttribute('html', 'data-theme')) === 'light');
-    await shot('landing-light');
+    await shot('app-light');
 
     await page.reload({ waitUntil: 'networkidle' });
     check('the choice survives a reload', (await page.getAttribute('html', 'data-theme')) === 'light');
@@ -176,8 +231,8 @@ async function main() {
     await page.waitForTimeout(350);
     check('toggle switches back to dark', (await page.getAttribute('html', 'data-theme')) === 'dark');
 
-    // ---- navbar -----------------------------------------------------------
-    console.log('\n3c. Navbar layout');
+    // ---- app navbar -------------------------------------------------------
+    console.log('\n3c. Application navbar layout');
     const navBox = await page.locator('.nav').boundingBox();
     const navLinks = await page.locator('.nav a').count();
     check('nav renders on a single line', navBox.height < 56, `(height ${Math.round(navBox.height)}px, ${navLinks} links)`);
