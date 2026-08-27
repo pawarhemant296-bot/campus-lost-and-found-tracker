@@ -1,26 +1,18 @@
-# dependencies
 node_modules/
-.venv/
-__pycache__/
-*.pyc
+dist/
+build/
 
-# build output
-frontend/dist/
+# runtime data
+server/data/
+server/uploads/*
+!server/uploads/.gitkeep
 
-# local data & uploads
-backend/data/
-backend/uploads/*
-!backend/uploads/.gitkeep
-
-# environment
+# env
 .env
 .env.local
-*.local
 
-# tooling output
-.shots/
-coverage/
-.pytest_cache/
+# logs / os
+*.log
 npm-debug.log*
-yarn-error.log*
 .DS_Store
+Thumbs.db

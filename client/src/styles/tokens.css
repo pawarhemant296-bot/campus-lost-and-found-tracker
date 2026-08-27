@@ -1,0 +1,160 @@
+/* =========================================================================
+   TraceBack — Design Tokens
+   Dark, futuristic, cosmic theme. Near-black canvas, glowing violet accents,
+   nebula gradients and faint starfields. Every screen composes these tokens,
+   so a single change here re-themes the entire product.
+   ========================================================================= */
+
+:root {
+  /* ---------------------------------------------------------- base surfaces */
+  --bg-base: #0a0a0f;
+  --bg-deep: #06060a;
+  --bg-raise: #101018;
+  --surface: #151220;
+  --surface-2: #1b1729;
+  --surface-3: #221c33;
+  --surface-glass: rgba(21, 18, 32, 0.72);
+  --surface-glass-strong: rgba(16, 14, 26, 0.92);
+
+  /* ------------------------------------------------------------- accents */
+  --violet-50: #f5f3ff;
+  --violet-200: #ddd6fe;
+  --violet-300: #c4b5fd;
+  --violet-400: #a78bfa;
+  --violet-500: #8b5cf6;
+  --violet-600: #7c3aed;
+  --violet-700: #6d28d9;
+  --violet-900: #4c1d95;
+  --fuchsia-400: #c084fc;
+  --fuchsia-500: #a855f7;
+
+  --accent: var(--violet-400);
+  --accent-bright: var(--fuchsia-400);
+  --accent-deep: var(--violet-900);
+
+  /* ---------------------------------------------------------------- text */
+  --text: #f4f2ff;
+  --text-soft: #cfc9e8;
+  --text-dim: #9d94bd;
+  --text-faint: #6f6790;
+  --text-on-accent: #14091f;
+
+  /* ------------------------------------------------------------- borders */
+  --border: rgba(167, 139, 250, 0.14);
+  --border-soft: rgba(167, 139, 250, 0.08);
+  --border-strong: rgba(167, 139, 250, 0.34);
+  --border-glow: rgba(192, 132, 252, 0.55);
+
+  /* ------------------------------------------------------------ semantic */
+  --info: #818cf8;
+  --amber: #fbbf24;
+  --orange: #fb923c;
+  --yellow: #facc15;
+  --green: #34d399;
+  --red: #fb7185;
+  --gray: #8b8ba7;
+
+  /* ----------------------------------------------------------- gradients */
+  --grad-primary: linear-gradient(135deg, #8b5cf6 0%, #a855f7 50%, #c084fc 100%);
+  --grad-primary-hover: linear-gradient(135deg, #7c3aed 0%, #9333ea 50%, #b06bfb 100%);
+  --grad-text: linear-gradient(100deg, #c4b5fd 0%, #c084fc 45%, #8b5cf6 100%);
+  --grad-nebula: radial-gradient(
+      1100px 620px at 12% -8%,
+      rgba(124, 58, 237, 0.34) 0%,
+      transparent 62%
+    ),
+    radial-gradient(880px 520px at 92% 4%, rgba(168, 85, 247, 0.24) 0%, transparent 60%),
+    radial-gradient(760px 700px at 50% 108%, rgba(76, 29, 149, 0.36) 0%, transparent 66%);
+  --grad-card: linear-gradient(160deg, rgba(167, 139, 250, 0.09) 0%, rgba(21, 18, 32, 0) 55%);
+  --grad-sidebar: linear-gradient(180deg, rgba(30, 22, 50, 0.9) 0%, rgba(10, 10, 15, 0.96) 100%);
+
+  /* ------------------------------------------------------- glow / shadow */
+  --glow-xs: 0 0 8px rgba(167, 139, 250, 0.35);
+  --glow-sm: 0 0 14px rgba(167, 139, 250, 0.32);
+  --glow-md: 0 0 26px rgba(167, 139, 250, 0.34);
+  --glow-lg: 0 0 48px rgba(168, 85, 247, 0.38);
+  --glow-accent: 0 8px 26px rgba(124, 58, 237, 0.45);
+  --shadow-card: 0 18px 40px -22px rgba(0, 0, 0, 0.9);
+  --shadow-float: 0 28px 60px -26px rgba(0, 0, 0, 0.95);
+  --ring-focus: 0 0 0 3px rgba(167, 139, 250, 0.28);
+
+  /* --------------------------------------------------------------- radii */
+  --r-xs: 8px;
+  --r-sm: 10px;
+  --r-md: 12px;
+  --r-lg: 16px;
+  --r-xl: 22px;
+  --r-pill: 999px;
+
+  /* -------------------------------------------------------------- space */
+  --s-1: 4px;
+  --s-2: 8px;
+  --s-3: 12px;
+  --s-4: 16px;
+  --s-5: 20px;
+  --s-6: 24px;
+  --s-8: 32px;
+  --s-10: 40px;
+  --s-12: 48px;
+  --s-16: 64px;
+  --s-20: 80px;
+
+  /* ---------------------------------------------------------- typography */
+  --font-display: 'Space Grotesk', 'Inter', system-ui, -apple-system, sans-serif;
+  --font-body: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-mono: ui-monospace, 'SF Mono', 'JetBrains Mono', Menlo, monospace;
+
+  --fs-xs: 0.72rem;
+  --fs-sm: 0.82rem;
+  --fs-base: 0.94rem;
+  --fs-md: 1.02rem;
+  --fs-lg: 1.2rem;
+  --fs-xl: 1.5rem;
+  --fs-2xl: 2rem;
+  --fs-3xl: 2.6rem;
+  --fs-hero: clamp(2.3rem, 5vw, 3.7rem);
+
+  /* --------------------------------------------------------------- misc */
+  --sidebar-w: 264px;
+  --sidebar-w-collapsed: 78px;
+  --topbar-h: 68px;
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --t-fast: 140ms;
+  --t-base: 240ms;
+  --t-slow: 460ms;
+}
+
+/* ------------------------------------------------------ status badge tokens */
+:root {
+  --st-reported-fg: #a5b4fc;
+  --st-reported-bg: rgba(99, 102, 241, 0.16);
+  --st-reported-bd: rgba(129, 140, 248, 0.42);
+
+  --st-possible_match-fg: #fcd9a0;
+  --st-possible_match-bg: rgba(217, 119, 6, 0.16);
+  --st-possible_match-bd: rgba(251, 191, 36, 0.48);
+
+  --st-claim_requested-fg: #fdba74;
+  --st-claim_requested-bg: rgba(249, 115, 22, 0.16);
+  --st-claim_requested-bd: rgba(251, 146, 60, 0.48);
+
+  --st-verification-fg: #fde68a;
+  --st-verification-bg: rgba(250, 204, 21, 0.14);
+  --st-verification-bd: rgba(250, 204, 21, 0.45);
+
+  --st-returned-fg: #6ee7b7;
+  --st-returned-bg: rgba(16, 185, 129, 0.16);
+  --st-returned-bd: rgba(52, 211, 153, 0.45);
+
+  --st-closed-fg: #b3b3c9;
+  --st-closed-bg: rgba(139, 139, 167, 0.14);
+  --st-closed-bd: rgba(139, 139, 167, 0.34);
+
+  --st-lost-fg: #fca5c4;
+  --st-lost-bg: rgba(244, 63, 94, 0.14);
+  --st-lost-bd: rgba(251, 113, 133, 0.42);
+
+  --st-found-fg: #a5f3d0;
+  --st-found-bg: rgba(20, 184, 166, 0.14);
+  --st-found-bd: rgba(45, 212, 191, 0.42);
+}
