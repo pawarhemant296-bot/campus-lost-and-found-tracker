@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import Icon from '../components/Icon.jsx';
 import {
-  Badge,
   Button,
   Card,
   LifecycleStepper,
@@ -65,8 +64,8 @@ export default function Landing() {
         <div className="container hero-grid">
           <div>
             <div className="row gap-2 mb-4">
-              <Badge>PCE SW PS 13</Badge>
               <Tag icon="sparkle">AI-assisted matching</Tag>
+              <Tag icon="shield">Privacy-first</Tag>
             </div>
             <h1>
               <span className="line">LOST SOMETHING?</span>
