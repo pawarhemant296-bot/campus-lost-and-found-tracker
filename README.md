@@ -7,7 +7,7 @@
 TraceBack is a complete, working full-stack application — not a mockup. Every screen is wired
 to a real REST API, a real database and a real matching engine.
 
-**Docs:** [UI walkthrough (29 screenshots)](docs/SCREENSHOTS.md) · [SIH presentation &amp; Q&amp;A guide (PDF)](docs/TraceBack-SIH-Guide.pdf)
+**Docs:** [SIH idea-submission deck (PDF)](docs/TraceBack-SIH-Deck.pdf) · [UI walkthrough (29 screenshots)](docs/SCREENSHOTS.md) · [SIH presentation &amp; Q&amp;A guide (PDF)](docs/TraceBack-SIH-Guide.pdf)
 
 ```
 Student A loses a wallet → reports it

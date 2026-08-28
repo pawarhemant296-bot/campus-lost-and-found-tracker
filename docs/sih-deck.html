@@ -1,0 +1,403 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>TraceBack — SIH Idea Submission Deck</title>
+    <style>
+      @page { size: A4 landscape; margin: 0; }
+      :root {
+        --ink:#14111f; --soft:#3b3550; --dim:#655d7e; --faint:#8b84a0;
+        --violet:#6d28d9; --violet2:#8b5cf6; --fuchsia:#a21caf; --violetpale:#f5f3ff;
+        --line:#e4def0; --panel:#f7f4fd; --panel2:#efeafb;
+        --green:#067a55; --amber:#b45309; --rose:#be123c; --blue:#4338ca; --teal:#0f766e;
+      }
+      * { box-sizing:border-box; margin:0; }
+      body { font-family:"Segoe UI",Helvetica,Arial,sans-serif; color:var(--ink); -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+      h1,h2,h3,h4 { font-family:"Segoe UI Semibold","Segoe UI",Arial,sans-serif; line-height:1.15; }
+      p{ line-height:1.5; }
+      code,.mono{ font-family:"Consolas","SF Mono",monospace; font-size:9px; background:var(--panel2); padding:1px 5px; border-radius:4px; color:var(--blue); }
+      .muted{ color:var(--dim); } .faint{ color:var(--faint); }
+
+      /* one landscape slide = one page */
+      .slide {
+        width:297mm; height:209.5mm; padding:11mm 13mm 9mm; position:relative; overflow:hidden;
+        break-after:page; background:#fff; display:flex; flex-direction:column;
+      }
+      .slide:last-child{ break-after:auto; }
+
+      /* slide header band */
+      .shead{ display:flex; align-items:center; justify-content:space-between; border-bottom:2.5px solid var(--violet); padding-bottom:8px; margin-bottom:12px; }
+      .brand{ display:flex; align-items:center; gap:9px; font-size:16px; font-weight:700; letter-spacing:-.02em; color:var(--violet); }
+      .orb{ width:28px; height:28px; border-radius:9px; background:radial-gradient(circle at 32% 28%, #e9d5ff,#a855f7 60%,#4c1d95); display:grid; place-items:center; position:relative; box-shadow:inset 0 0 7px rgba(255,255,255,.5); }
+      .orb::before{ content:""; width:13px; height:13px; border-radius:50%; border:2px solid rgba(255,255,255,.9); }
+      .orb::after{ content:""; position:absolute; width:4px; height:4px; border-radius:50%; background:#fff; }
+      .stitle{ font-size:20px; font-weight:700; color:var(--ink); letter-spacing:-.01em; text-align:center; flex:1; }
+      .sih{ text-align:right; font-size:9px; font-weight:700; color:var(--violet); line-height:1.1; }
+      .sih b{ font-size:12px; color:var(--ink); display:block; }
+
+      .body{ flex:1; min-height:0; }
+      .cols{ display:grid; grid-template-columns:1fr 1fr; gap:16px; height:100%; }
+      .cols3{ display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px; }
+
+      h3{ font-size:12.5px; color:var(--violet); margin-bottom:5px; }
+      .dot::before{ content:""; display:inline-block; width:7px; height:7px; border-radius:50%; background:var(--violet2); margin-right:7px; vertical-align:1px; }
+      ul{ padding-left:16px; margin:3px 0 8px; } li{ font-size:10px; line-height:1.42; margin-bottom:2.5px; color:var(--soft); }
+      .feat{ margin-bottom:9px; }
+      .feat .h{ font-size:10.6px; font-weight:700; color:var(--ink); }
+      .feat .h .ic{ display:inline-grid; place-items:center; width:16px; height:16px; border-radius:5px; background:var(--panel2); color:var(--violet); margin-right:6px; vertical-align:-3px; font-size:9px; font-weight:700; }
+      .feat .t{ font-size:9.6px; color:var(--dim); line-height:1.4; }
+
+      .panel{ background:var(--panel); border:1px solid var(--line); border-radius:10px; padding:11px 13px; }
+      .panel.tint{ background:linear-gradient(160deg,#f5f3ff,#faf8ff); }
+      table{ width:100%; border-collapse:collapse; } th,td{ text-align:left; padding:5px 7px; border-bottom:1px solid var(--line); font-size:9.3px; vertical-align:top; }
+      th{ font-size:8.3px; text-transform:uppercase; letter-spacing:.05em; color:var(--faint); background:var(--panel); }
+      .yes{ color:var(--green); font-weight:700; } .no{ color:var(--rose); font-weight:700; } .part{ color:var(--amber); font-weight:700; }
+
+      .arrow{ display:inline-block; width:0; height:0; border-top:4px solid transparent; border-bottom:4px solid transparent; border-left:6px solid var(--violet2); }
+      .arrow.d{ border-left:5px solid transparent; border-right:5px solid transparent; border-top:6px solid var(--violet2); border-bottom:0; }
+
+      /* architecture boxes */
+      .arch{ display:flex; flex-direction:column; align-items:center; gap:0; }
+      .abox{ width:100%; border:1.5px solid var(--violet2); border-radius:8px; padding:6px 9px; background:#fff; text-align:center; }
+      .abox.dark{ background:#1a1030; border-color:#4c1d95; color:#e9d5ff; }
+      .abox .t{ font-weight:700; font-size:9.6px; } .abox .d{ font-size:8.1px; color:var(--dim); } .abox.dark .d{ color:#c4b5fd; }
+      .adown{ width:2px; height:11px; background:var(--violet2); }
+      .asplit{ display:flex; gap:10px; width:100%; } .asplit .abox{ flex:1; }
+      .acap{ font-size:7.8px; color:var(--faint); }
+
+      /* workflow vertical */
+      .wf{ display:flex; flex-direction:column; align-items:center; gap:3px; }
+      .wnode{ border:1.4px solid var(--violet2); color:var(--violet); background:#fff; border-radius:999px; padding:3px 12px; font-size:9px; font-weight:600; }
+      .wnode.k{ background:var(--violet); color:#fff; border-color:var(--violet); }
+      .wrow{ display:flex; gap:6px; align-items:center; }
+
+      /* weight bars */
+      .wt{ display:flex; align-items:center; gap:7px; margin:3px 0; }
+      .wt .l{ width:132px; font-size:9.2px; } .wt .b{ flex:1; height:8px; background:var(--panel2); border-radius:99px; overflow:hidden; }
+      .wt .b>span{ display:block; height:100%; background:linear-gradient(90deg,#8b5cf6,#c084fc); }
+      .wt .p{ width:30px; text-align:right; font-weight:700; font-size:9.2px; color:var(--violet); }
+
+      .stack{ display:flex; flex-wrap:wrap; gap:6px; margin-top:5px; }
+      .pill{ border:1px solid var(--line); background:#fff; border-radius:999px; padding:4px 11px; font-size:9.3px; font-weight:600; color:var(--soft); }
+      .pill b{ color:var(--violet); }
+
+      .kcards{ display:grid; grid-template-columns:repeat(4,1fr); gap:9px; }
+      .kc{ background:var(--panel); border:1px solid var(--line); border-radius:9px; padding:9px; text-align:center; }
+      .kc .v{ font-size:17px; font-weight:700; color:var(--violet); } .kc .l{ font-size:8.2px; text-transform:uppercase; letter-spacing:.04em; color:var(--faint); }
+
+      .bene{ display:flex; gap:8px; align-items:flex-start; margin-bottom:7px; }
+      .bene .ic{ flex:0 0 auto; width:24px; height:24px; border-radius:7px; display:grid; place-items:center; font-size:11px; font-weight:700; color:#fff; }
+      .bene .tx .h{ font-size:10px; font-weight:700; } .bene .tx .d{ font-size:9px; color:var(--dim); line-height:1.35; }
+
+      .foot{ position:absolute; left:13mm; right:13mm; bottom:5mm; display:flex; justify-content:space-between; font-size:7.6px; color:var(--faint); border-top:1px solid var(--line); padding-top:5px; }
+
+      /* title slide */
+      .title-slide{ background:linear-gradient(150deg,#160c2e 0%,#2e1065 48%,#4c1d95 100%); color:#fff; justify-content:center; }
+      .title-slide::after{ content:""; position:absolute; inset:0;
+        background:
+          radial-gradient(1.5px 1.5px at 12% 22%,#fff 50%,transparent 51%),
+          radial-gradient(1.3px 1.3px at 68% 14%,#ddd6fe 50%,transparent 51%),
+          radial-gradient(1.7px 1.7px at 38% 62%,#fff 50%,transparent 51%),
+          radial-gradient(1.1px 1.1px at 86% 44%,#c4b5fd 50%,transparent 51%),
+          radial-gradient(1.4px 1.4px at 58% 82%,#fff 50%,transparent 51%),
+          radial-gradient(1.2px 1.2px at 24% 84%,#e9d5ff 50%,transparent 51%);
+        background-size:170px 170px,210px 210px,250px 250px,190px 190px,230px 230px,160px 160px; opacity:.55; }
+      .title-slide>*{ position:relative; z-index:1; }
+      .ts-top{ display:flex; align-items:center; justify-content:space-between; }
+      .ts-brand{ display:flex; align-items:center; gap:11px; font-size:20px; font-weight:700; }
+      .ts-sih{ text-align:right; font-size:11px; font-weight:700; color:#e9d5ff; line-height:1.15; }
+      .ts-sih b{ display:block; font-size:15px; color:#fff; }
+      .ts-mid{ margin-top:6mm; }
+      .kicker{ font-size:12px; letter-spacing:.32em; text-transform:uppercase; color:#c4b5fd; }
+      .ts-title{ font-size:52px; font-weight:700; letter-spacing:-.03em; margin:6px 0 4px; }
+      .ts-tag{ font-size:17px; color:#e9d5ff; }
+      .fields{ margin-top:8mm; display:grid; grid-template-columns:1fr 1fr; gap:8px 34px; max-width:210mm; }
+      .field{ display:flex; gap:9px; font-size:12px; align-items:baseline; }
+      .field .k{ color:#c4b5fd; min-width:150px; } .field .v{ font-weight:600; }
+      .fill{ background:rgba(255,255,255,.16); border:1px dashed rgba(255,255,255,.5); border-radius:5px; padding:0 8px; color:#f5f3ff; }
+      .note-fill{ margin-top:6mm; font-size:9.5px; color:#d8ccf5; }
+    </style>
+  </head>
+  <body>
+    <!-- ══════════════ SLIDE 1 · TITLE ══════════════ -->
+    <section class="slide title-slide">
+      <div class="ts-top">
+        <div class="ts-brand"><span class="orb"></span> TraceBack</div>
+        <div class="ts-sih"><b>SMART INDIA HACKATHON</b>Idea Submission</div>
+      </div>
+      <div class="ts-mid">
+        <div class="kicker">Title Page</div>
+        <div class="ts-title">Lost &amp; Found Item Tracker</div>
+        <div class="ts-tag">TraceBack — an AI-assisted platform that reconnects people with their belongings</div>
+
+        <div class="fields">
+          <div class="field"><span class="k">Problem Statement ID</span><span class="v fill">PCE&nbsp;SW&nbsp;PS&nbsp;13&nbsp;/&nbsp;SIH25___</span></div>
+          <div class="field"><span class="k">Theme</span><span class="v">Smart Automation / Miscellaneous</span></div>
+          <div class="field" style="grid-column:1 / -1"><span class="k">Problem Statement Title</span><span class="v">Lost &amp; Found Item Tracker</span></div>
+          <div class="field"><span class="k">PS Category</span><span class="v">Software</span></div>
+          <div class="field"><span class="k">Team ID</span><span class="v fill">to be filled</span></div>
+          <div class="field"><span class="k">Team Name</span><span class="v fill">to be filled</span></div>
+          <div class="field"><span class="k">AISHE Code</span><span class="v fill">to be filled</span></div>
+        </div>
+        <div class="note-fill">Fill the dashed fields with your team's details before submitting.</div>
+      </div>
+    </section>
+
+    <!-- ══════════════ SLIDE 2 · SOLUTION ══════════════ -->
+    <section class="slide">
+      <div class="shead">
+        <div class="brand"><span class="orb"></span> TraceBack</div>
+        <div class="stitle">SOLUTION: TraceBack</div>
+        <div class="sih"><b>SIH</b>Idea Submission</div>
+      </div>
+      <div class="body cols">
+        <div>
+          <div class="feat"><div class="h"><span class="ic">1</span>Friendly onboarding</div><div class="t">Email + password registration with user / admin roles. Reporter identities are masked by default for privacy.</div></div>
+          <div class="feat"><div class="h"><span class="ic">2</span>Dashboard — one-stop view</div><div class="t">Stat cards (lost, found, active matches, returned), recent activity with live status badges, and top match previews as glowing confidence rings.</div></div>
+          <div class="feat"><div class="h"><span class="ic">3</span>Report Lost / Found</div><div class="t">A 3-step wizard (Details &rsaquo; Photo &rsaquo; Review) with a live preview card. Found reports add <b>private ownership questions</b> only the true owner can answer.</div></div>
+          <div class="feat"><div class="h"><span class="ic">4</span>Smart matching engine</div><div class="t">Compares every new report against all open opposite reports and produces a single, explainable confidence score with a per-factor breakdown.</div></div>
+          <div class="feat"><div class="h"><span class="ic">5</span>Search &amp; browse</div><div class="t">Filter by category, location, date range and status; masked reporters keep listings privacy-safe.</div></div>
+        </div>
+        <div>
+          <div class="feat"><div class="h"><span class="ic">6</span>Claim &amp; verification</div><div class="t">A step wizard: Submitted &rsaquo; Verification &rsaquo; Review &rsaquo; Handover &rsaquo; Returned. Answers are auto-scored; a human approves.</div></div>
+          <div class="feat"><div class="h"><span class="ic">7</span>Secure messaging</div><div class="t">Item-scoped chat so owner and finder coordinate a handover without sharing phone numbers.</div></div>
+          <div class="feat"><div class="h"><span class="ic">8</span>Notifications</div><div class="t">Match alerts, claim updates and messages in a live bell panel and a full page.</div></div>
+          <div class="feat"><div class="h"><span class="ic">9</span>Admin console</div><div class="t">Moderate users, items and claims; resolve disputes; view analytics; tune the matching weights live.</div></div>
+          <div class="panel tint" style="margin-top:6px">
+            <h3 style="margin-bottom:4px">AI-driven decision support</h3>
+            <ul style="margin:0">
+              <li>Weighted lost-vs-found match scoring across five signals.</li>
+              <li>Image-based similarity from farmer/finder-uploaded photos (perceptual hash).</li>
+              <li>Advisory ownership-verification scoring from private answers.</li>
+              <li>Analytics: match success rate, resolution time, category &amp; location hotspots.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div class="foot"><span>TraceBack — Lost &amp; Found Item Tracker</span><span>Solution overview</span></div>
+    </section>
+
+    <!-- ══════════════ SLIDE 3 · TECHNICAL APPROACH ══════════════ -->
+    <section class="slide">
+      <div class="shead">
+        <div class="brand"><span class="orb"></span> TraceBack</div>
+        <div class="stitle">TECHNICAL APPROACH</div>
+        <div class="sih"><b>SIH</b>Idea Submission</div>
+      </div>
+      <div class="body cols">
+        <div>
+          <h3 class="dot">Architecture</h3>
+          <div class="arch">
+            <div class="abox"><div class="t">Users / Admin</div><div class="d">web browser</div></div>
+            <div class="adown"></div>
+            <div class="abox"><div class="t">Frontend — React + Vite</div><div class="d">cosmic design system, 23 screens</div></div>
+            <div class="acap">REST + JWT (Bearer)</div>
+            <div class="adown"></div>
+            <div class="abox"><div class="t">Backend — Node.js + Express</div><div class="d">auth · items · matches · claims · messages · notifications · admin</div></div>
+            <div class="adown"></div>
+            <div class="asplit">
+              <div class="abox dark"><div class="t">SQLite (WAL)</div><div class="d">8 tables + settings</div></div>
+              <div class="abox dark"><div class="t">Matching engine</div><div class="d">5 weighted signals + perceptual dHash</div></div>
+            </div>
+          </div>
+
+          <h3 class="dot" style="margin-top:12px">Technical stack</h3>
+          <div class="stack">
+            <span class="pill"><b>React 18</b> + Vite</span>
+            <span class="pill">Custom <b>CSS</b> design system</span>
+            <span class="pill"><b>Node.js</b> + Express</span>
+            <span class="pill"><b>SQLite</b> (node:sqlite / better-sqlite3)</span>
+            <span class="pill"><b>JWT</b> + bcrypt</span>
+            <span class="pill"><b>multer</b> uploads</span>
+            <span class="pill"><b>sharp</b> — 8×8 dHash</span>
+            <span class="pill">Hand-rolled <b>SVG</b> charts</span>
+          </div>
+        </div>
+        <div>
+          <h3 class="dot">Workflow</h3>
+          <div class="wf">
+            <div class="wnode k">Register / Login</div><div class="arrow d"></div>
+            <div class="wnode">Dashboard</div><div class="arrow d"></div>
+            <div class="wnode">Report Lost / Found (+ photo, place, time)</div><div class="arrow d"></div>
+            <div class="wnode">Backend validates &amp; stores</div><div class="arrow d"></div>
+            <div class="wnode k">Matching engine scans opposite reports</div><div class="arrow d"></div>
+            <div class="wnode">Possible match generated &rsaquo; both notified</div><div class="arrow d"></div>
+            <div class="wnode">Claim submitted</div><div class="arrow d"></div>
+            <div class="wnode k">Ownership verification (private Q&amp;A)</div><div class="arrow d"></div>
+            <div class="wnode">Finder / admin approves</div><div class="arrow d"></div>
+            <div class="wnode">Safe handover</div><div class="arrow d"></div>
+            <div class="wnode k">RETURNED &rsaquo; CLOSED</div>
+          </div>
+        </div>
+      </div>
+      <div class="foot"><span>TraceBack — Lost &amp; Found Item Tracker</span><span>Architecture · Workflow · Stack</span></div>
+    </section>
+
+    <!-- ══════════════ SLIDE 4 · MATCHING ENGINE ══════════════ -->
+    <section class="slide">
+      <div class="shead">
+        <div class="brand"><span class="orb"></span> TraceBack</div>
+        <div class="stitle">THE SMART MATCHING ENGINE</div>
+        <div class="sih"><b>SIH</b>Idea Submission</div>
+      </div>
+      <div class="body cols">
+        <div>
+          <h3 class="dot">Weighted signals (never relies on an exact name)</h3>
+          <div class="wt"><span class="l">Item / category similarity</span><span class="b"><span style="width:25%"></span></span><span class="p">25%</span></div>
+          <div class="wt"><span class="l">Description similarity</span><span class="b"><span style="width:25%"></span></span><span class="p">25%</span></div>
+          <div class="wt"><span class="l">Location similarity</span><span class="b"><span style="width:20%"></span></span><span class="p">20%</span></div>
+          <div class="wt"><span class="l">Date / time proximity</span><span class="b"><span style="width:15%"></span></span><span class="p">15%</span></div>
+          <div class="wt"><span class="l">Image similarity (dHash)</span><span class="b"><span style="width:15%"></span></span><span class="p">15%</span></div>
+
+          <h3 class="dot" style="margin-top:12px">Techniques</h3>
+          <ul>
+            <li><b>Synonym lexicon</b> — phone&rsaquo;mobile&rsaquo;cell, wallet&rsaquo;purse, canteen&rsaquo;cafeteria&rsaquo;mess, colour &amp; place families.</li>
+            <li><b>Text similarity</b> — token overlap + Jaccard + character-bigram cosine (tolerates typos &amp; different wording).</li>
+            <li><b>Calibration curve</b> — same-object descriptions share only 30–45% of words; mapped to real confidence.</li>
+            <li><b>Date proximity</b> — exponential decay across a configurable window.</li>
+            <li><b>Image similarity</b> — 64-bit perceptual difference hash, Hamming distance.</li>
+            <li><b>Weight re-normalisation</b> — a missing factor (no photo) is dropped and the rest rescale.</li>
+          </ul>
+        </div>
+        <div class="panel tint">
+          <h3 style="margin-bottom:6px">Worked example — from the live demo</h3>
+          <p class="muted" style="font-size:9.4px; margin-bottom:6px">Black wallet, same canteen, same afternoon, similar description:</p>
+          <table>
+            <tr><td>Category &amp; item name</td><td class="mono">81%</td></tr>
+            <tr><td>Description</td><td class="mono">75%</td></tr>
+            <tr><td>Location</td><td class="mono">100%</td></tr>
+            <tr><td>Date / time</td><td class="mono">100%</td></tr>
+            <tr><td>Image</td><td class="mono">94%</td></tr>
+            <tr><td style="font-weight:700">Combined score</td><td class="mono" style="font-weight:700; color:var(--violet)">88% — Possible Match</td></tr>
+          </table>
+          <h3 style="margin:12px 0 5px">Ownership verification</h3>
+          <ul style="margin:0">
+            <li>Finder stores private questions; the API returns only the questions, never the answers.</li>
+            <li>Claimant answers are auto-scored by the same engine — advisory only.</li>
+            <li>Genuine owner ~<b>89%</b> vs impostor ~<b>2%</b> in testing; a human always decides.</li>
+            <li>Rejections can be escalated as a dispute to an admin.</li>
+          </ul>
+        </div>
+      </div>
+      <div class="foot"><span>TraceBack — Lost &amp; Found Item Tracker</span><span>Matching engine &amp; verification</span></div>
+    </section>
+
+    <!-- ══════════════ SLIDE 5 · FEASIBILITY & VIABILITY ══════════════ -->
+    <section class="slide">
+      <div class="shead">
+        <div class="brand"><span class="orb"></span> TraceBack</div>
+        <div class="stitle">FEASIBILITY AND VIABILITY</div>
+        <div class="sih"><b>SIH</b>Idea Submission</div>
+      </div>
+      <div class="body cols">
+        <div>
+          <h3 class="dot">Feasibility</h3>
+          <p style="font-size:10px; color:var(--soft); margin-bottom:7px">TraceBack is highly feasible — it is already a complete, working full-stack build, verified end to end (44 automated checks over the whole lost&rsaquo;found&rsaquo;match&rsaquo;return journey).</p>
+          <div class="feat"><div class="h">Technical</div><div class="t">Standard, well-supported stack (Node, React, SQLite). Runs on any laptop with zero database setup and no C++ toolchain — the DB auto-uses Node's built-in SQLite.</div></div>
+          <div class="feat"><div class="h">Operational</div><div class="t">Simple web UI any student can use; the matching, verification and status tracking are automatic. A single command boots the whole app.</div></div>
+          <div class="feat"><div class="h">Financial</div><div class="t">Near-zero running cost: SQLite + local image hashing need no paid APIs. A low-cost MVP is already done.</div></div>
+          <div class="feat"><div class="h">Deployable now</div><div class="t">Single Node process serves the built client; hostable on any free/low-cost PaaS or a campus server.</div></div>
+        </div>
+        <div>
+          <h3 class="dot">Viability</h3>
+          <div class="feat"><div class="h">Real, recurring need</div><div class="t">Every campus, office and transit hub loses items daily; the current process is scattered notice boards and chat groups.</div></div>
+          <div class="feat"><div class="h">Privacy-first trust model</div><div class="t">Masked identities + private ownership questions make institutions comfortable adopting it officially.</div></div>
+          <div class="feat"><div class="h">Modular &amp; scalable design</div><div class="t">Plain-SQL data layer swaps to PostgreSQL for multi-campus; the matching engine is an isolated module ready for heavier ML.</div></div>
+          <div class="feat"><div class="h">Adoption paths</div><div class="t">Deploy per college / company; integrate with existing ID systems; extend to city-level public lost-and-found.</div></div>
+          <div class="panel" style="margin-top:4px">
+            <h3 style="margin-bottom:4px">Sustainability</h3>
+            <p class="muted" style="font-size:9.2px">Institutional licensing, optional premium notifications, and analytics for facilities teams — with no dependency on paid third-party services.</p>
+          </div>
+        </div>
+      </div>
+      <div class="foot"><span>TraceBack — Lost &amp; Found Item Tracker</span><span>Feasibility &amp; Viability</span></div>
+    </section>
+
+    <!-- ══════════════ SLIDE 6 · IMPACT & BENEFITS ══════════════ -->
+    <section class="slide">
+      <div class="shead">
+        <div class="brand"><span class="orb"></span> TraceBack</div>
+        <div class="stitle">IMPACT AND BENEFITS</div>
+        <div class="sih"><b>SIH</b>Idea Submission</div>
+      </div>
+      <div class="body">
+        <div class="kcards" style="margin-bottom:12px">
+          <div class="kc"><div class="v">Faster</div><div class="l">reunions vs notice boards</div></div>
+          <div class="kc"><div class="v">Higher</div><div class="l">return rate via matching</div></div>
+          <div class="kc"><div class="v">Safer</div><div class="l">verified ownership</div></div>
+          <div class="kc"><div class="v">Zero</div><div class="l">paid-API dependency</div></div>
+        </div>
+        <div class="cols">
+          <div>
+            <h3 class="dot">Impact</h3>
+            <div class="bene"><span class="ic" style="background:#7c3aed">1</span><div class="tx"><div class="h">Reconnects people with belongings</div><div class="d">Turns a scattered, manual process into an automated, trackable one — items get back to owners that would otherwise be lost for good.</div></div></div>
+            <div class="bene"><span class="ic" style="background:#a21caf">2</span><div class="tx"><div class="h">Digital transformation of lost-and-found</div><div class="d">Replaces WhatsApp groups and paper registers with a searchable, auditable system for the whole institution.</div></div></div>
+            <div class="bene"><span class="ic" style="background:#4338ca">3</span><div class="tx"><div class="h">Builds trust &amp; safety</div><div class="d">Verification and masked identities prevent false claims and protect users' contact details.</div></div></div>
+            <div class="bene"><span class="ic" style="background:#0f766e">4</span><div class="tx"><div class="h">Reduces waste</div><div class="d">Returned items mean fewer replacements bought — a small but real sustainability win.</div></div></div>
+          </div>
+          <div>
+            <h3 class="dot">Key benefits</h3>
+            <ul>
+              <li><b>Smart matching</b> — AI-assisted scoring surfaces likely pairs instantly, no manual searching.</li>
+              <li><b>Image similarity</b> — photos are compared perceptually, catching matches text alone would miss.</li>
+              <li><b>Ownership verification</b> — private questions ensure the right person gets the item.</li>
+              <li><b>Live status tracking</b> — everyone sees exactly where a case stands, end to end.</li>
+              <li><b>Secure in-app chat</b> — coordinate handovers without exposing phone numbers.</li>
+              <li><b>Admin analytics</b> — success rate, resolution time and hotspots for facilities teams.</li>
+              <li><b>Runs anywhere</b> — offline-capable dev setup, no paid services, one-command boot.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div class="foot"><span>TraceBack — Lost &amp; Found Item Tracker</span><span>Impact &amp; Benefits</span></div>
+    </section>
+
+    <!-- ══════════════ SLIDE 7 · COMPARISON & REFERENCES ══════════════ -->
+    <section class="slide">
+      <div class="shead">
+        <div class="brand"><span class="orb"></span> TraceBack</div>
+        <div class="stitle">COMPARISON &amp; REFERENCES</div>
+        <div class="sih"><b>SIH</b>Idea Submission</div>
+      </div>
+      <div class="body">
+        <h3 class="dot">Comparison with existing approaches</h3>
+        <table>
+          <thead><tr><th>Feature</th><th>TraceBack</th><th>Notice board / WhatsApp group</th><th>Generic classifieds</th><th>Basic college portal</th></tr></thead>
+          <tbody>
+            <tr><td>Automatic lost&rsaquo;found matching</td><td class="yes">Yes — 5-signal engine</td><td class="no">No</td><td class="no">No</td><td class="no">No</td></tr>
+            <tr><td>Image-based similarity</td><td class="yes">Yes (perceptual hash)</td><td class="no">No</td><td class="no">No</td><td class="no">No</td></tr>
+            <tr><td>Ownership verification</td><td class="yes">Yes (private Q&amp;A + auto-score)</td><td class="no">No</td><td class="no">No</td><td class="part">Rare</td></tr>
+            <tr><td>Masked identity / privacy</td><td class="yes">Yes, until approval</td><td class="no">No (numbers public)</td><td class="part">Partial</td><td class="part">Partial</td></tr>
+            <tr><td>Status tracking &amp; lifecycle</td><td class="yes">Yes (6 stages)</td><td class="no">No</td><td class="no">No</td><td class="part">Basic</td></tr>
+            <tr><td>Secure in-app chat</td><td class="yes">Yes (item-scoped)</td><td class="part">Group only</td><td class="part">Varies</td><td class="no">No</td></tr>
+            <tr><td>Search &amp; filter</td><td class="yes">Yes (category/place/date/status)</td><td class="no">No</td><td class="yes">Yes</td><td class="part">Basic</td></tr>
+            <tr><td>Admin moderation &amp; analytics</td><td class="yes">Yes</td><td class="no">No</td><td class="part">Limited</td><td class="part">Limited</td></tr>
+            <tr><td>Cost to run</td><td class="yes">Near-zero, no paid APIs</td><td class="yes">Free but manual</td><td class="part">Ads/fees</td><td class="part">IT overhead</td></tr>
+          </tbody>
+        </table>
+
+        <div class="cols" style="margin-top:12px">
+          <div class="panel">
+            <h3 style="margin-bottom:5px">What makes TraceBack different</h3>
+            <ul style="margin:0">
+              <li>It <b>actively matches</b> instead of just listing — the core gap in every existing option.</li>
+              <li>It <b>verifies ownership</b> before handover, which listings and chats cannot.</li>
+              <li>It is <b>privacy-first and auditable</b> — suitable for official institutional adoption.</li>
+            </ul>
+          </div>
+          <div class="panel">
+            <h3 style="margin-bottom:5px">References &amp; resources</h3>
+            <ul style="margin:0">
+              <li>Live source code &amp; docs: GitHub repository (this project).</li>
+              <li>UI walkthrough: <span class="mono">docs/SCREENSHOTS.md</span> (29 screenshots).</li>
+              <li>Technical guide: <span class="mono">docs/TraceBack-SIH-Guide.pdf</span>.</li>
+              <li>End-to-end test: <span class="mono">server/e2e-demo.mjs</span> (44 assertions).</li>
+              <li class="faint">Add your deployed demo URL and demo video link here before submitting.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div class="foot"><span>TraceBack — Lost &amp; Found Item Tracker</span><span>Comparison &amp; References</span></div>
+    </section>
+  </body>
+</html>
