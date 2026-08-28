@@ -1,0 +1,433 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>TraceBack — SIH Presentation & Q&amp;A Guide</title>
+    <style>
+      @page { size: A4; margin: 16mm 14mm; }
+      :root {
+        --ink: #14111f; --soft: #3b3550; --dim: #6b6482; --faint: #8b84a0;
+        --violet: #6d28d9; --violet2: #8b5cf6; --fuchsia: #a21caf;
+        --line: #e4def0; --bg: #ffffff; --panel: #f7f4fd; --panel2: #efeafb;
+        --green: #067a55; --amber: #b45309; --rose: #be123c; --blue: #4338ca;
+      }
+      * { box-sizing: border-box; }
+      body {
+        font-family: "Segoe UI", Helvetica, Arial, sans-serif;
+        color: var(--ink); background: var(--bg); margin: 0;
+        font-size: 10.6px; line-height: 1.55; -webkit-print-color-adjust: exact; print-color-adjust: exact;
+      }
+      h1,h2,h3,h4 { font-family: "Segoe UI Semibold","Segoe UI",Arial,sans-serif; line-height: 1.2; margin: 0; }
+      p { margin: 0 0 7px; }
+      a { color: var(--violet); text-decoration: none; }
+      code, .mono { font-family: "Consolas","SF Mono",monospace; font-size: 9.4px; background: var(--panel2); padding: 1px 5px; border-radius: 4px; color: var(--blue); }
+      .muted { color: var(--dim); } .faint { color: var(--faint); } .small { font-size: 9.6px; }
+
+      /* cover */
+      .cover {
+        background: linear-gradient(150deg,#1a1030 0%, #2e1065 45%, #4c1d95 100%);
+        color: #fff; padding: 40px 34px; border-radius: 18px; position: relative; overflow: hidden;
+        margin-bottom: 20px;
+      }
+      .cover::after {
+        content:""; position:absolute; inset:0;
+        background:
+          radial-gradient(1.4px 1.4px at 15% 25%, #fff 50%, transparent 51%),
+          radial-gradient(1.2px 1.2px at 70% 15%, #ddd6fe 50%, transparent 51%),
+          radial-gradient(1.6px 1.6px at 40% 60%, #fff 50%, transparent 51%),
+          radial-gradient(1px 1px at 88% 45%, #c4b5fd 50%, transparent 51%),
+          radial-gradient(1.3px 1.3px at 60% 80%, #fff 50%, transparent 51%);
+        background-size: 180px 180px,220px 220px,260px 260px,200px 200px,240px 240px; opacity:.5;
+      }
+      .cover > * { position: relative; z-index: 1; }
+      .brand { display:flex; align-items:center; gap:11px; font-size:20px; font-weight:700; letter-spacing:-.02em; }
+      .orb { width:34px; height:34px; border-radius:11px; background: radial-gradient(circle at 32% 28%, #e9d5ff, #a855f7 60%, #4c1d95); box-shadow: inset 0 0 8px rgba(255,255,255,.5); display:grid; place-items:center; position:relative; }
+      .orb::before { content:""; width:15px; height:15px; border-radius:50%; border:2px solid rgba(255,255,255,.85); }
+      .orb::after { content:""; position:absolute; width:5px; height:5px; border-radius:50%; background:#fff; box-shadow:0 0 5px #fff; }
+      .cover h1 { font-size: 33px; letter-spacing:-.03em; margin: 22px 0 6px; }
+      .cover .tagline { font-size: 15px; color:#e9d5ff; }
+      .cover .sub { margin-top:14px; font-size:11px; color:#d8ccf5; max-width: 60ch; }
+      .cover .chips { margin-top:20px; display:flex; flex-wrap:wrap; gap:7px; }
+      .cover .chip { background: rgba(255,255,255,.14); border:1px solid rgba(255,255,255,.28); border-radius:999px; padding:4px 12px; font-size:10px; }
+
+      .section { margin: 0 0 15px; break-inside: avoid; }
+      h2 { font-size: 15.5px; color: var(--violet); padding-bottom:5px; border-bottom: 2px solid var(--line); margin-bottom: 9px; }
+      h2 .n { display:inline-grid; place-items:center; width:20px; height:20px; border-radius:6px; background:var(--violet); color:#fff; font-size:11px; margin-right:8px; vertical-align:2px; }
+      h3 { font-size: 12px; color: var(--ink); margin: 11px 0 5px; }
+
+      .grid2 { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+      .grid3 { display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; }
+      .panel { background: var(--panel); border:1px solid var(--line); border-radius:10px; padding:11px 13px; }
+      .panel h3 { margin-top:0; }
+      .tag { display:inline-block; background:var(--panel2); color:var(--violet); border-radius:999px; padding:1px 9px; font-size:9px; font-weight:600; }
+
+      table { width:100%; border-collapse:collapse; margin:6px 0 8px; }
+      th,td { text-align:left; padding:5px 8px; border-bottom:1px solid var(--line); vertical-align:top; }
+      th { font-size:8.8px; text-transform:uppercase; letter-spacing:.06em; color:var(--faint); background:var(--panel); }
+      td { font-size:9.9px; }
+      tr { break-inside: avoid; }
+
+      ul,ol { margin:4px 0 8px; padding-left:18px; }
+      li { margin-bottom:3px; }
+      .lead { border-left:3px solid var(--violet2); padding-left:10px; }
+
+      .qa { break-inside: avoid; margin-bottom:9px; padding:9px 12px; background:var(--panel); border:1px solid var(--line); border-left:3px solid var(--violet2); border-radius:8px; }
+      .qa .q { font-weight:600; color:var(--ink); }
+      .qa .q::before { content:"Q "; color:var(--fuchsia); font-weight:700; }
+      .qa .a { margin-top:4px; color:var(--soft); }
+      .qa .a::before { content:"A "; color:var(--green); font-weight:700; }
+
+      .flow { display:flex; flex-wrap:wrap; align-items:center; gap:6px; margin:8px 0; }
+      .node { background:#fff; border:1.5px solid var(--violet2); color:var(--violet); border-radius:999px; padding:4px 11px; font-size:9.4px; font-weight:600; }
+      .node.done { background:var(--violet); color:#fff; border-color:var(--violet); }
+      /* font-independent arrow: a CSS triangle */
+      .arrow { display:inline-block; width:0; height:0; border-top:4px solid transparent; border-bottom:4px solid transparent; border-left:6px solid var(--violet2); }
+
+      /* HTML architecture diagram (no box-drawing glyphs) */
+      .arch { display:flex; flex-direction:column; align-items:center; gap:0; }
+      .arch .box { width:100%; border:1.5px solid var(--violet2); border-radius:9px; padding:8px 10px; background:#fff; text-align:center; }
+      .arch .box.dark { background:#1a1030; border-color:#4c1d95; color:#e9d5ff; }
+      .arch .box .t { font-weight:700; font-size:10px; }
+      .arch .box .d { font-size:8.6px; color:var(--dim); }
+      .arch .box.dark .d { color:#c4b5fd; }
+      .arch .down { width:2px; height:13px; background:var(--violet2); }
+      .arch .split { display:flex; gap:12px; width:100%; }
+      .arch .split .box { flex:1; }
+      .arch .caption { font-size:8.4px; color:var(--faint); margin-top:3px; }
+
+      .kbar { display:flex; gap:8px; margin:8px 0; }
+      .kbar .k { flex:1; background:var(--panel); border:1px solid var(--line); border-radius:9px; padding:9px 11px; text-align:center; }
+      .kbar .kv { font-size:19px; font-weight:700; color:var(--violet); letter-spacing:-.02em; }
+      .kbar .kl { font-size:8.4px; text-transform:uppercase; letter-spacing:.05em; color:var(--faint); }
+
+      .weight { display:flex; align-items:center; gap:8px; margin:4px 0; }
+      .weight .lab { width:150px; font-size:9.6px; }
+      .weight .bar { flex:1; height:9px; background:var(--panel2); border-radius:999px; overflow:hidden; }
+      .weight .bar > span { display:block; height:100%; background:linear-gradient(90deg,#8b5cf6,#c084fc); border-radius:999px; }
+      .weight .pct { width:34px; text-align:right; font-weight:700; font-size:9.6px; color:var(--violet); }
+
+      pre { background:#1a1030; color:#e9d5ff; border-radius:9px; padding:10px 12px; font-family:"Consolas",monospace; font-size:8.9px; line-height:1.5; overflow:hidden; white-space:pre-wrap; margin:6px 0 8px; }
+      pre .c { color:#a78bfa; }
+      .pagebreak { break-before: page; }
+      footer { margin-top:14px; padding-top:8px; border-top:1px solid var(--line); font-size:8.6px; color:var(--faint); display:flex; justify-content:space-between; }
+      .badge-note { background:#fef3c7; border:1px solid #fde68a; color:#92400e; border-radius:8px; padding:8px 11px; font-size:9.4px; margin:6px 0; }
+    </style>
+  </head>
+  <body>
+    <!-- ═══════════════════════════════ COVER ═══════════════════════════════ -->
+    <div class="cover">
+      <div class="brand"><span class="orb"></span> TraceBack</div>
+      <h1>Lost &amp; Found Item Tracker</h1>
+      <div class="tagline">SIH Presentation &amp; Technical Q&amp;A Guide</div>
+      <div class="sub">
+        A centralised, AI-assisted platform where people report lost or found items, receive smart
+        match suggestions, prove ownership privately, chat securely and track an item all the way
+        back to its owner. This guide covers the architecture, workflow, technology choices and the
+        questions a jury is most likely to ask — with answers.
+      </div>
+      <div class="chips">
+        <span class="chip">Node.js + Express</span>
+        <span class="chip">React + Vite</span>
+        <span class="chip">SQLite</span>
+        <span class="chip">Weighted matching engine</span>
+        <span class="chip">Perceptual image hashing</span>
+        <span class="chip">JWT auth</span>
+      </div>
+    </div>
+
+    <!-- 1. PROBLEM ─────────────────────────────────────────────────────────── -->
+    <div class="section">
+      <h2><span class="n">1</span>Problem &amp; objective</h2>
+      <p class="lead">
+        On any campus, in any office or public place, lost items and found items are reported through
+        scattered WhatsApp groups, notice boards and lost-and-found desks that never talk to each
+        other. An owner and a finder can be metres apart and never connect. <b>TraceBack gives both
+        sides one place to report, automatically matches lost against found, verifies the real owner,
+        and tracks the item to a confirmed return.</b>
+      </p>
+      <div class="grid3">
+        <div class="panel"><h3>Who it's for</h3><p class="small muted">Students, staff and visitors on a campus; adaptable to offices, transit hubs and events.</p></div>
+        <div class="panel"><h3>Core promise</h3><p class="small muted">Report once. The engine keeps scanning every new report and alerts you the moment a likely match appears.</p></div>
+        <div class="panel"><h3>What makes it safe</h3><p class="small muted">Private ownership questions and masked identities stop a stranger from simply claiming your things.</p></div>
+      </div>
+    </div>
+
+    <!-- 2. ARCHITECTURE ────────────────────────────────────────────────────── -->
+    <div class="section">
+      <h2><span class="n">2</span>System architecture</h2>
+      <div class="grid2">
+        <div>
+          <div class="arch">
+            <div class="box"><div class="t">Users / Admin</div><div class="d">web browser</div></div>
+            <div class="down"></div>
+            <div class="box"><div class="t">Frontend — React + Vite</div><div class="d">cosmic design system (CSS)</div></div>
+            <div class="caption">REST + JWT (Bearer)</div>
+            <div class="down"></div>
+            <div class="box"><div class="t">Backend — Node + Express</div><div class="d">auth · items · matches · claims · messages · notifications · admin</div></div>
+            <div class="down"></div>
+            <div class="split">
+              <div class="box dark"><div class="t">SQLite (WAL)</div><div class="d">8 tables + settings</div></div>
+              <div class="box dark"><div class="t">Matching engine</div><div class="d">5 weighted signals + perceptual dHash</div></div>
+            </div>
+          </div>
+        </div>
+        <div>
+          <h3>Request lifecycle</h3>
+          <ol class="small">
+            <li>The React client calls the REST API with a JWT in the <code>Authorization</code> header.</li>
+            <li>Express validates the token, runs the route, and reads/writes SQLite through prepared statements.</li>
+            <li>On a new/edited report the <b>matching engine</b> runs synchronously, persists any matches and fires notifications.</li>
+            <li>The client polls notifications and messages so alerts appear without a page refresh.</li>
+          </ol>
+          <h3>Why one Node service (not micro-services)</h3>
+          <p class="small muted">A single process is far easier to run, demo and reason about under hackathon time pressure. The code is already split into clean modules (auth, items, matches, claims, …), so any one could be extracted into its own service later without a rewrite.</p>
+          <div class="badge-note">The matching engine is a pure, dependency-free module — it can be lifted into a separate Python/FastAPI service if heavier ML is ever needed, without touching the API contract.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3. TECH STACK ──────────────────────────────────────────────────────── -->
+    <div class="section">
+      <h2><span class="n">3</span>Technology stack &amp; why</h2>
+      <table>
+        <thead><tr><th>Layer</th><th>Choice</th><th>Why this, for this project</th></tr></thead>
+        <tbody>
+          <tr><td>Frontend</td><td>React 18 + Vite + React Router</td><td>Component reuse across 23 screens; Vite gives instant HMR and a small production build.</td></tr>
+          <tr><td>Styling</td><td>Hand-built CSS design system (tokens &rsaquo; components)</td><td>Full control of the cosmic glow theme with zero framework weight; one token file re-themes everything.</td></tr>
+          <tr><td>Backend</td><td>Node.js + Express (ES modules)</td><td>The recommended stack for this problem statement; huge ecosystem, tiny boilerplate.</td></tr>
+          <tr><td>Database</td><td>SQLite — built-in <code>node:sqlite</code>, or <code>better-sqlite3</code></td><td>Same relational model as PostgreSQL but <b>zero setup</b>. All queries are plain SQL, so moving to Postgres is a driver swap, not a rewrite.</td></tr>
+          <tr><td>Auth</td><td>JWT + bcrypt password hashing</td><td>Stateless, role-aware (user / admin); no session store to run.</td></tr>
+          <tr><td>Images</td><td><code>multer</code> upload + <code>sharp</code> 8×8 dHash</td><td>Real perceptual image similarity computed locally — no cloud key, works offline.</td></tr>
+          <tr><td>Charts</td><td>Hand-rolled SVG</td><td>On-theme gradient fills, no chart dependency to ship.</td></tr>
+        </tbody>
+      </table>
+      <div class="badge-note">Robustness detail worth mentioning to judges: the database auto-selects a driver — Node's built-in <code>node:sqlite</code> on Node 22.5+ (no compiler needed) and <code>better-sqlite3</code> when present. Both native modules are <i>optional</i>, so <code>npm install</code> can never fail for lack of a C++ toolchain.</div>
+    </div>
+
+    <!-- 4. WORKFLOW ────────────────────────────────────────────────────────── -->
+    <div class="section pagebreak">
+      <h2><span class="n">4</span>Complete user workflow</h2>
+      <p class="small muted">The end-to-end journey, exactly as demonstrated:</p>
+      <div class="flow">
+        <span class="node done">1 Register / Login</span><span class="arrow"></span>
+        <span class="node done">2 Dashboard</span><span class="arrow"></span>
+        <span class="node done">3 Report Lost / Found</span><span class="arrow"></span>
+        <span class="node done">4 Details + photo + place + time</span><span class="arrow"></span>
+        <span class="node done">5 Backend validates &amp; stores</span>
+      </div>
+      <div class="flow">
+        <span class="node done">6 Engine scans opposite reports</span><span class="arrow"></span>
+        <span class="node done">7 Match generated</span><span class="arrow"></span>
+        <span class="node done">8 Both users notified</span><span class="arrow"></span>
+        <span class="node done">9 Claim submitted</span>
+      </div>
+      <div class="flow">
+        <span class="node done">10 Ownership verification</span><span class="arrow"></span>
+        <span class="node done">11 Finder / admin approves</span><span class="arrow"></span>
+        <span class="node done">12 Safe handover</span><span class="arrow"></span>
+        <span class="node done">13 RETURNED / CLOSED</span>
+      </div>
+
+      <h3>Item status lifecycle (enforced server-side, never moves backward)</h3>
+      <div class="flow">
+        <span class="node">REPORTED</span><span class="arrow"></span>
+        <span class="node">POSSIBLE MATCH</span><span class="arrow"></span>
+        <span class="node">CLAIM REQUESTED</span><span class="arrow"></span>
+        <span class="node">VERIFICATION</span><span class="arrow"></span>
+        <span class="node">RETURNED</span><span class="arrow"></span>
+        <span class="node">CLOSED</span>
+      </div>
+
+      <div class="grid2">
+        <div class="panel">
+          <h3>Lost item example</h3>
+          <p class="small muted">A student loses a black wallet in the canteen &rsaquo; clicks <b>Report Lost</b>, enters name, category, description, location, date/time and a photo &rsaquo; the engine searches all open <i>found</i> reports &rsaquo; a high-scoring match surfaces and both people are notified.</p>
+        </div>
+        <div class="panel">
+          <h3>Found item example</h3>
+          <p class="small muted">Another student finds the wallet &rsaquo; clicks <b>Report Found</b>, adds details plus <b>private ownership questions</b> only the true owner could answer &rsaquo; the engine compares it against open <i>lost</i> reports &rsaquo; possible owners are alerted.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- 5. MATCHING ENGINE ─────────────────────────────────────────────────── -->
+    <div class="section">
+      <h2><span class="n">5</span>The smart matching engine</h2>
+      <p class="small">It never relies on an exact item name. It scores five independent signals, each 0–100%, and combines them with configurable weights:</p>
+      <div class="weight"><span class="lab">Item / category similarity</span><span class="bar"><span style="width:25%"></span></span><span class="pct">25%</span></div>
+      <div class="weight"><span class="lab">Description similarity</span><span class="bar"><span style="width:25%"></span></span><span class="pct">25%</span></div>
+      <div class="weight"><span class="lab">Location similarity</span><span class="bar"><span style="width:20%"></span></span><span class="pct">20%</span></div>
+      <div class="weight"><span class="lab">Date / time proximity</span><span class="bar"><span style="width:15%"></span></span><span class="pct">15%</span></div>
+      <div class="weight"><span class="lab">Image similarity</span><span class="bar"><span style="width:15%"></span></span><span class="pct">15%</span></div>
+
+      <div class="grid2" style="margin-top:9px">
+        <div>
+          <h3>The techniques, in one line each</h3>
+          <ul class="small">
+            <li><b>Synonym lexicon</b> — collapses <code>phone≈mobile≈cell</code>, <code>wallet≈purse</code>, <code>canteen≈cafeteria≈mess</code>, colour families and place names.</li>
+            <li><b>Text similarity</b> — token overlap + Jaccard + character-bigram cosine, so typos and different wording still match.</li>
+            <li><b>Calibration curve</b> — two people describing the same object share only 30–45% of words; a curve maps that onto human-meaningful confidence.</li>
+            <li><b>Date proximity</b> — exponential decay across a configurable window (default 14 days).</li>
+            <li><b>Image similarity</b> — 64-bit perceptual dHash; similarity = Hamming distance between the two hashes.</li>
+            <li><b>Weight re-normalisation</b> — a factor with no data (e.g. no photo) is dropped and the remaining weights rescale, so scores stay comparable.</li>
+          </ul>
+        </div>
+        <div class="panel">
+          <h3>Worked example (from the live demo)</h3>
+          <p class="small">Black wallet, same canteen, same afternoon, similar description &rsaquo;</p>
+          <table>
+            <tr><td>Category &amp; name</td><td class="mono">81%</td></tr>
+            <tr><td>Description</td><td class="mono">75%</td></tr>
+            <tr><td>Location</td><td class="mono">100%</td></tr>
+            <tr><td>Date / time</td><td class="mono">100%</td></tr>
+            <tr><td>Image</td><td class="mono">94%</td></tr>
+            <tr><td><b>Combined</b></td><td class="mono"><b>88% — Possible Match</b></td></tr>
+          </table>
+          <p class="small faint">Weights are live-tunable from Admin &rsaquo; Settings and persisted, so the engine is genuinely configuration-driven.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- 6. VERIFICATION & SECURITY ─────────────────────────────────────────── -->
+    <div class="section">
+      <h2><span class="n">6</span>Ownership verification &amp; security</h2>
+      <div class="grid2">
+        <div>
+          <p class="small">A major safeguard prevents anyone from simply claiming an item:</p>
+          <ol class="small">
+            <li>The finder stores <b>private question/answer pairs</b> when reporting.</li>
+            <li>The API returns <b>only the questions</b> — answers never leave the database.</li>
+            <li>A claimant's answers are auto-scored against the stored answers by the same text-similarity engine.</li>
+            <li>The score is <b>advisory</b>; the finder or an admin makes the final call.</li>
+            <li>A rejected claimant can raise a <b>dispute</b> that lands in the admin queue.</li>
+          </ol>
+          <p class="small">In the demo the genuine owner scores <b>~89%</b> while an impostor scores <b>~2%</b>.</p>
+        </div>
+        <div class="panel">
+          <h3>Privacy &amp; security controls</h3>
+          <ul class="small">
+            <li><b>JWT</b> auth; passwords hashed with <b>bcrypt</b>.</li>
+            <li>Reporter names masked (<code>Aa••• S.</code>) and emails masked in every public response.</li>
+            <li>Phone numbers never serialised through the API.</li>
+            <li>Identities unlock <b>only after a claim is approved</b>.</li>
+            <li>Role-based access — admin routes reject non-admins (403); protected routes reject anonymous requests (401).</li>
+            <li>You cannot claim your own report; server-side input validation on every write.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- 7. DATABASE ────────────────────────────────────────────────────────── -->
+    <div class="section pagebreak">
+      <h2><span class="n">7</span>Database design</h2>
+      <table>
+        <thead><tr><th>Table</th><th>Key fields</th></tr></thead>
+        <tbody>
+          <tr><td>users</td><td class="mono">id, name, email, password_hash, role, phone, campus, avatar_hue, status, created_at</td></tr>
+          <tr><td>items</td><td class="mono">id, user_id, type(lost/found), title, category, description, location, item_date, image_url, image_hash, status, questions, is_flagged, created_at, updated_at</td></tr>
+          <tr><td>matches</td><td class="mono">id, lost_item_id, found_item_id, match_score, breakdown, status (unique per pair)</td></tr>
+          <tr><td>claims</td><td class="mono">id, item_id, match_id, claimant_id, proof, answer_score, stage, status, decided_by, decision_note</td></tr>
+          <tr><td>messages</td><td class="mono">id, sender_id, receiver_id, item_id, message, read_status, created_at</td></tr>
+          <tr><td>notifications</td><td class="mono">id, user_id, type, title, message, link, read_status, created_at</td></tr>
+          <tr><td>disputes</td><td class="mono">id, claim_id, raised_by, reason, status, resolution</td></tr>
+          <tr><td>settings</td><td class="mono">key, value  — live matching-engine configuration</td></tr>
+        </tbody>
+      </table>
+      <p class="small faint">Foreign keys enforced; indexes on item type/status, per-user lookups and match sides. WAL journaling for concurrent reads.</p>
+    </div>
+
+    <!-- 8. API ─────────────────────────────────────────────────────────────── -->
+    <div class="section">
+      <h2><span class="n">8</span>REST API (surface)</h2>
+      <div class="grid2">
+        <table>
+          <thead><tr><th>Endpoint</th><th>Purpose</th></tr></thead>
+          <tbody>
+            <tr><td class="mono">POST /auth/register · /login</td><td>Account + JWT</td></tr>
+            <tr><td class="mono">GET/PATCH /auth/me</td><td>Profile</td></tr>
+            <tr><td class="mono">GET /items</td><td>Browse + filters</td></tr>
+            <tr><td class="mono">POST /items</td><td>Create report (multipart)</td></tr>
+            <tr><td class="mono">GET /items/:id</td><td>Item + matches + questions</td></tr>
+            <tr><td class="mono">POST /items/:id/rescan</td><td>Re-run engine</td></tr>
+            <tr><td class="mono">GET /matches</td><td>Your match pairs</td></tr>
+          </tbody>
+        </table>
+        <table>
+          <thead><tr><th>Endpoint</th><th>Purpose</th></tr></thead>
+          <tbody>
+            <tr><td class="mono">POST /claims</td><td>Open a claim</td></tr>
+            <tr><td class="mono">POST /claims/:id/verify</td><td>Answer + auto-score</td></tr>
+            <tr><td class="mono">POST /claims/:id/decision</td><td>Approve / reject</td></tr>
+            <tr><td class="mono">POST /claims/:id/handover</td><td>Mark RETURNED</td></tr>
+            <tr><td class="mono">GET/POST /messages/*</td><td>Item-scoped chat</td></tr>
+            <tr><td class="mono">GET /notifications</td><td>Alert centre</td></tr>
+            <tr><td class="mono">GET/PUT /admin/*</td><td>Moderation + analytics + settings</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- 9. FEATURES ────────────────────────────────────────────────────────── -->
+    <div class="section">
+      <h2><span class="n">9</span>MVP vs advanced features (all built)</h2>
+      <div class="grid2">
+        <div class="panel"><h3>MVP</h3><ul class="small"><li>Login / register with roles</li><li>Report lost / found with photo</li><li>Search &amp; filter</li><li>Weighted match score</li><li>Claim verification</li><li>Item status tracking</li><li>Admin dashboard</li></ul></div>
+        <div class="panel"><h3>Advanced differentiators</h3><ul class="small"><li>Perceptual image similarity (dHash)</li><li>Synonym-aware, calibrated text matching</li><li>In-app chat with item context</li><li>Live notification centre</li><li>Auto-scored verification + disputes</li><li>Analytics (trends, donut, hotspots, funnel)</li><li>Live engine weight tuning</li></ul></div>
+      </div>
+    </div>
+
+    <!-- 10. Q&A ────────────────────────────────────────────────────────────── -->
+    <div class="section pagebreak">
+      <h2><span class="n">10</span>Anticipated jury questions &amp; answers</h2>
+
+      <h3>Concept &amp; impact</h3>
+      <div class="qa"><div class="q">How is this better than a WhatsApp lost-and-found group?</div><div class="a">A group is an unsearchable, unstructured feed with no matching, no verification and no status tracking. TraceBack structures every report, actively matches lost against found, proves ownership before handover, and shows exactly where each case stands.</div></div>
+      <div class="qa"><div class="q">Who is the target user and how do you measure success?</div><div class="a">Students, staff and visitors on a campus. Success metrics are already in the analytics dashboard: match success rate, claim approval rate and average resolution time.</div></div>
+
+      <h3>The matching engine</h3>
+      <div class="qa"><div class="q">Is this actually "AI"? What algorithm is it?</div><div class="a">It's a transparent, weighted multi-signal scoring model — a lightweight, explainable recommendation engine rather than a black box. Text uses token-overlap, Jaccard and character-bigram cosine with a synonym lexicon and a calibration curve; images use a perceptual difference hash. Every score is fully explainable, which is exactly what a verification workflow needs.</div></div>
+      <div class="qa"><div class="q">Why not a deep-learning / sentence-transformer model?</div><div class="a">It's an intended upgrade path — the engine is an isolated module behind a stable interface. For a reliable, offline, instant demo, a transparent scoring model is more defensible and needs no GPU or API key. We can drop in embeddings later without changing the API.</div></div>
+      <div class="qa"><div class="q">What if there's no photo?</div><div class="a">The image factor is marked unavailable and its 15% weight is redistributed across the remaining four, which re-normalise to 100%. A perfect text+location+time match still reaches a high score.</div></div>
+      <div class="qa"><div class="q">How do you avoid false matches?</div><div class="a">A configurable threshold hides weak pairs, matching is one-to-many for review (not auto-confirmed), and the human verification step with private questions is the real gate before any handover.</div></div>
+
+      <h3>Security &amp; trust</h3>
+      <div class="qa"><div class="q">What stops someone falsely claiming an item?</div><div class="a">Private ownership questions only the true owner can answer (answers never exposed by the API), an advisory auto-score, a mandatory human decision by the finder/admin, masked identities until approval, and a dispute path for contested rejections.</div></div>
+      <div class="qa"><div class="q">How is user data protected?</div><div class="a">Passwords are bcrypt-hashed, sessions are stateless JWTs, names/emails are masked in public responses, phone numbers are never sent, and identities are revealed only after a claim is approved.</div></div>
+
+      <h3>Technical &amp; scale</h3>
+      <div class="qa"><div class="q">Why SQLite — will it scale?</div><div class="a">SQLite handles thousands of concurrent readers comfortably, which covers a campus. Every query is plain SQL, so migrating to PostgreSQL for a multi-campus deployment is a driver change, not a rewrite. It was chosen for zero-setup reliability during the demo.</div></div>
+      <div class="qa"><div class="q">How would you scale to many campuses?</div><div class="a">Swap SQLite for PostgreSQL, put the stateless API behind a load balancer, move uploads to object storage (S3/Cloudinary), and extract the matching engine into its own service if load demands it. Nothing in the design blocks this.</div></div>
+      <div class="qa"><div class="q">Real-time updates?</div><div class="a">Today the client polls notifications and messages on a short interval — simple and demo-safe. WebSockets are the documented next step for instant push.</div></div>
+      <div class="qa"><div class="q">Is it tested?</div><div class="a">Yes — a 44-assertion end-to-end script drives the full journey (register &rsaquo; report both sides &rsaquo; match &rsaquo; genuine claim vs impostor &rsaquo; approve &rsaquo; handover &rsaquo; returned &rsaquo; admin &rsaquo; access control), plus an automated screenshot pass across three screen sizes.</div></div>
+
+      <h3>Product &amp; future</h3>
+      <div class="qa"><div class="q">What would you add next?</div><div class="a">College email verification, map-based location matching (haversine on coordinates), WebSocket push, sentence-transformer text embeddings, and a native mobile app.</div></div>
+    </div>
+
+    <!-- 11. DEMO SCRIPT ────────────────────────────────────────────────────── -->
+    <div class="section">
+      <h2><span class="n">11</span>Live demo script (for judges)</h2>
+      <div class="kbar">
+        <div class="k"><div class="kv">2 min</div><div class="kl">Report lost + found</div></div>
+        <div class="k"><div class="kv">1 min</div><div class="kl">Match &amp; notify</div></div>
+        <div class="k"><div class="kv">2 min</div><div class="kl">Verify &amp; approve</div></div>
+        <div class="k"><div class="kv">1 min</div><div class="kl">Return + admin</div></div>
+      </div>
+      <ol class="small">
+        <li>Sign in as <b>Student A</b> (the one-click chip) &rsaquo; <b>Report Lost</b>: a black wallet at the canteen. Show the live-preview card and the match-strength checklist.</li>
+        <li>Sign in as <b>Student B</b> &rsaquo; <b>Report Found</b>: the same wallet, adding two private ownership questions. On submit, the engine immediately shows an <b>88% match</b>.</li>
+        <li>Open <b>Possible Matches</b>: expand the pair to reveal the five factor bars and the reasons. Both users already have a notification.</li>
+        <li>As Student A, <b>Claim</b> it and answer the verification questions — show the ~89% auto-score.</li>
+        <li>As Student B, open the claim, review the answers, <b>Approve</b>. Identities now unlock; coordinate handover in chat.</li>
+        <li><b>Confirm handover</b> &rsaquo; both reports flip to <b>RETURNED</b>, then <b>CLOSED</b>.</li>
+        <li>Sign in as <b>Admin</b>: show KPIs, the analytics charts and the live matching-weight sliders in Settings.</li>
+      </ol>
+      <div class="badge-note">Punchline for the jury: change a weight in Admin &rsaquo; Settings, re-scan a report, and the score visibly changes — proving the engine is genuinely configuration-driven, not hard-coded for the demo.</div>
+    </div>
+
+    <footer>
+      <span>TraceBack — Lost &amp; Found Item Tracker · SIH Presentation &amp; Q&amp;A Guide</span>
+      <span>Node.js · Express · SQLite · React · Vite</span>
+    </footer>
+  </body>
+</html>
