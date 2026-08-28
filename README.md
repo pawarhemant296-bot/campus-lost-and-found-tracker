@@ -364,7 +364,27 @@ taken, so you never get a bare stack trace.
 
 ### The UI looks like the old app after switching branches
 
-Hard-refresh to clear the cached bundle: `Ctrl+Shift+R` (`Cmd+Shift+R` on macOS).
+Hard-refresh to clear the cached bundle: `Ctrl+Shift+R` (`Cmd+Shift+R` on macOS). If it *still*
+looks old, check the port — an earlier version may be serving on 4000 while TraceBack runs
+elsewhere.
+
+### Files from a previous version are still in my folder
+
+Switching branches deletes tracked files but **not untracked ones**, so an earlier
+implementation's `node_modules`, database and uploads can survive on disk — and even keep serving
+on port 4000. Clear them out:
+
+```bash
+npm run clean:legacy
+```
+
+It removes only `backend/`, `frontend/`, `ai-service/`, `deploy/`, `scripts/` and
+`docker-compose.yml`, refuses to run unless the current tree really is TraceBack, and reports what
+it freed. The old implementation stays in git history either way — `git checkout main` brings it
+back.
+
+Prefer to inspect before deleting? `git clean -nxd` lists every untracked file without touching
+anything.
 
 ---
 
