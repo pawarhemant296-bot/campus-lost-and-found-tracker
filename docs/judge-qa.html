@@ -1,0 +1,277 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>TraceBack — Hackathon Judge Q&amp;A</title>
+    <style>
+      @page { size: A4; margin: 15mm 14mm; }
+      :root{
+        --ink:#14111f; --soft:#33304a; --dim:#615a7a; --faint:#8b84a0;
+        --violet:#6d28d9; --violet2:#8b5cf6; --fuchsia:#a21caf;
+        --line:#e6e0f2; --panel:#f7f4fd; --panel2:#efeafb;
+        --green:#067a55; --amber:#b45309; --rose:#be123c;
+      }
+      *{ box-sizing:border-box; margin:0; }
+      body{ font-family:"Segoe UI",Helvetica,Arial,sans-serif; color:var(--ink); font-size:10.6px; line-height:1.5; -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+      h1,h2,h3{ font-family:"Segoe UI Semibold","Segoe UI",Arial,sans-serif; line-height:1.15; }
+      code,.mono{ font-family:"Consolas","SF Mono",monospace; font-size:9.3px; background:var(--panel2); padding:1px 5px; border-radius:4px; color:#4338ca; }
+      b{ color:var(--ink); }
+      .muted{ color:var(--dim); }
+
+      .cover{ background:linear-gradient(150deg,#160c2e,#2e1065 48%,#4c1d95); color:#fff; border-radius:16px; padding:26px 30px; position:relative; overflow:hidden; margin-bottom:16px; }
+      .cover::after{ content:""; position:absolute; inset:0;
+        background:
+          radial-gradient(1.4px 1.4px at 15% 25%,#fff 50%,transparent 51%),
+          radial-gradient(1.2px 1.2px at 70% 15%,#ddd6fe 50%,transparent 51%),
+          radial-gradient(1.5px 1.5px at 42% 62%,#fff 50%,transparent 51%),
+          radial-gradient(1px 1px at 88% 45%,#c4b5fd 50%,transparent 51%);
+        background-size:170px 170px,210px 210px,250px 250px,190px 190px; opacity:.5; }
+      .cover>*{ position:relative; z-index:1; }
+      .brand{ display:flex; align-items:center; gap:10px; font-size:17px; font-weight:700; }
+      .orb{ width:30px; height:30px; border-radius:9px; background:radial-gradient(circle at 32% 28%,#e9d5ff,#a855f7 60%,#4c1d95); display:grid; place-items:center; position:relative; box-shadow:inset 0 0 7px rgba(255,255,255,.5); }
+      .orb::before{ content:""; width:14px; height:14px; border-radius:50%; border:2px solid rgba(255,255,255,.9); }
+      .orb::after{ content:""; position:absolute; width:4px; height:4px; border-radius:50%; background:#fff; }
+      .cover h1{ font-size:25px; letter-spacing:-.02em; margin:14px 0 4px; }
+      .cover p{ color:#e2d7f7; font-size:11px; max-width:64ch; }
+      .cover .kick{ font-size:10px; letter-spacing:.28em; text-transform:uppercase; color:#c4b5fd; }
+
+      .facts{ display:flex; flex-wrap:wrap; gap:6px; margin-top:14px; }
+      .fact{ background:rgba(255,255,255,.14); border:1px solid rgba(255,255,255,.26); border-radius:999px; padding:3px 11px; font-size:9px; }
+
+      .group{ font-size:9px; letter-spacing:.18em; text-transform:uppercase; color:var(--violet); font-weight:700; margin:14px 0 7px; padding-bottom:4px; border-bottom:1.5px solid var(--line); }
+
+      .qa{ break-inside:avoid; margin-bottom:10px; padding:10px 13px; background:var(--panel); border:1px solid var(--line); border-left:3px solid var(--violet2); border-radius:9px; }
+      .q{ font-size:11px; font-weight:700; color:var(--ink); }
+      .q .num{ display:inline-grid; place-items:center; width:17px; height:17px; border-radius:5px; background:var(--violet); color:#fff; font-size:9.5px; margin-right:7px; vertical-align:1px; }
+      .a{ margin-top:5px; color:var(--soft); }
+      .a p{ margin:0 0 4px; }
+      .a ul{ margin:4px 0 2px; padding-left:16px; }
+      .a li{ margin-bottom:2px; }
+      .tip{ display:inline-block; margin-top:4px; font-size:9px; color:var(--green); font-weight:600; }
+      .tip::before{ content:"SAY THIS  "; color:#fff; background:var(--fuchsia); border-radius:4px; padding:1px 6px; font-weight:700; letter-spacing:.04em; font-size:7.6px; margin-right:6px; }
+      .honest{ color:var(--amber); font-weight:600; }
+
+      footer{ margin-top:12px; padding-top:7px; border-top:1px solid var(--line); font-size:8.4px; color:var(--faint); display:flex; justify-content:space-between; }
+    </style>
+  </head>
+  <body>
+    <div class="cover">
+      <div class="brand"><span class="orb"></span> TraceBack</div>
+      <div class="kick" style="margin-top:12px">Hackathon jury round</div>
+      <h1>20 Judge Questions — Answered</h1>
+      <p>Ready-to-deliver answers for the SIH jury round, grounded in what TraceBack — the Lost &amp; Found Item Tracker — actually is and does. Each answer includes a one-line version to say out loud, and honest notes where something is a known limitation.</p>
+      <div class="facts">
+        <span class="fact">Node + Express + SQLite</span>
+        <span class="fact">React + Vite</span>
+        <span class="fact">5-signal matching engine</span>
+        <span class="fact">Perceptual image hashing</span>
+        <span class="fact">No paid third-party APIs</span>
+        <span class="fact">44 automated e2e checks</span>
+      </div>
+    </div>
+
+    <!-- ── PROBLEM & USERS ── -->
+    <div class="group">Problem, users &amp; uniqueness</div>
+
+    <div class="qa">
+      <div class="q"><span class="num">1</span>What exact problem are you solving, and why is it important?</div>
+      <div class="a">
+        <p>On any campus, office or public place, lost and found items are handled through scattered notice boards, WhatsApp groups and a lost-and-found desk that never talk to each other. An owner and a finder can be metres apart and never connect. <b>TraceBack gives both sides one place to report, automatically matches lost against found, verifies the real owner, and tracks the item to a confirmed return.</b></p>
+        <p>It matters because it saves people time and money (fewer replacement purchases), reduces daily friction on every campus, and turns an unreliable manual process into a trustworthy, trackable one.</p>
+        <span class="tip">"We replace scattered notice boards and chat groups with one system that actively matches lost and found items and proves ownership before returning them."</span>
+      </div>
+    </div>
+
+    <div class="qa">
+      <div class="q"><span class="num">2</span>Who is your target user, and how did you validate this is a real problem?</div>
+      <div class="a">
+        <p>Primary users are students and staff on a campus; the same design extends to offices, transit hubs and event venues. Validation is that this is a universally recognised pain — every college has an overflowing lost-and-found box and a daily stream of "has anyone seen my…" messages, and the problem statement itself confirms institutional demand.</p>
+        <p><span class="honest">Honest note:</span> our validation so far is observational rather than a formal survey — the first thing we'd do post-hackathon is a one-campus pilot to measure the real return rate.</p>
+        <span class="tip">"It's a problem on literally every campus — the current 'system' is a cardboard box and a WhatsApp group. A pilot is our next step to quantify it."</span>
+      </div>
+    </div>
+
+    <div class="qa">
+      <div class="q"><span class="num">3</span>What is innovative or unique about your solution?</div>
+      <div class="a">
+        <ul>
+          <li>It <b>actively matches</b> lost against found instead of just listing items — a transparent 5-signal scoring engine, not a black box.</li>
+          <li><b>Real perceptual image similarity</b> computed locally, so photos are compared even when text differs.</li>
+          <li>A <b>privacy-first ownership-verification flow</b>: private questions only the true owner can answer, auto-scored, with identities masked until approval.</li>
+          <li>Every match is <b>explainable</b> — it shows the per-factor breakdown and the reasons behind the score.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="qa">
+      <div class="q"><span class="num">4</span>How is your solution different from existing solutions?</div>
+      <div class="a">
+        <ul>
+          <li><b>Notice boards / WhatsApp groups:</b> no matching, no verification, no tracking, and phone numbers are public.</li>
+          <li><b>Generic classifieds:</b> listing, not matching — the user still searches manually.</li>
+          <li><b>Basic college portals:</b> simple forms that rarely verify ownership or track status.</li>
+        </ul>
+        <p>TraceBack is the only approach that <b>matches + verifies + tracks + keeps identities private</b>, end to end.</p>
+      </div>
+    </div>
+
+    <!-- ── TECHNICAL ── -->
+    <div class="group">Technology, architecture &amp; build</div>
+
+    <div class="qa">
+      <div class="q"><span class="num">5</span>Why did you choose this technology stack, architecture, or algorithm?</div>
+      <div class="a">
+        <p><b>Stack:</b> Node.js + Express + React is a widely known, well-supported stack that's easy to build and extend under time pressure. <b>Database:</b> SQLite for zero-setup reliability during a demo — every query is plain SQL, so moving to PostgreSQL later is a driver swap, not a rewrite. <b>Algorithm:</b> a transparent weighted-scoring model rather than deep learning, because a verification-critical workflow needs explainability and must run offline with no GPU or paid API.</p>
+        <p><b>Architecture:</b> a single Node service is easy to run and reason about; the code is already split into clean modules that could each become a separate service later.</p>
+      </div>
+    </div>
+
+    <div class="qa">
+      <div class="q"><span class="num">6</span>Explain your architecture — walk me from input to output.</div>
+      <div class="a">
+        <ul>
+          <li>A user files a report in the React client (title, category, description, location, date, photo).</li>
+          <li>The client calls the REST API with a JWT; Express validates the token and the input.</li>
+          <li>The report is written to SQLite; the photo gets a 64-bit perceptual hash.</li>
+          <li>The <b>matching engine runs immediately</b> against all open opposite-type reports and computes a five-factor score for each.</li>
+          <li>Matches above the threshold are saved and <b>notifications are created for both users</b>.</li>
+          <li>The owner claims the item &rsaquo; answers private questions (auto-scored) &rsaquo; the finder/admin approves &rsaquo; identities unlock &rsaquo; handover &rsaquo; status becomes <b>RETURNED &rsaquo; CLOSED</b>.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="qa">
+      <div class="q"><span class="num">7</span>Which parts did you actually build, and which are simulated or third-party?</div>
+      <div class="a">
+        <p><b>Built and real (all persisted in the database):</b> authentication, lost/found reporting with photo upload, the matching engine, perceptual image hashing, verification scoring, the full claim workflow, item-scoped chat, notifications, the admin console and analytics.</p>
+        <p><b>Simulated / limited, stated honestly:</b> the demo uses a seeded dataset with generated placeholder photos; notifications use short-interval polling rather than real-time push; there is no email/SMS verification yet; uploads are stored on local disk rather than cloud storage.</p>
+        <span class="tip">"There are no paid third-party services anywhere — the whole system, including image similarity, runs on our own code. What's not production-grade yet is infra hardening, not the core logic."</span>
+      </div>
+    </div>
+
+    <div class="qa">
+      <div class="q"><span class="num">8</span>What was the hardest technical challenge, and how did you solve it?</div>
+      <div class="a">
+        <p>Making text matching meaningful when two people describe the <b>same object with completely different words</b> — the owner lists what's inside ("ID card, ₹300"), the finder describes what's visible ("black wallet on a canteen table"). We solved it with a synonym lexicon plus a blend of token overlap, Jaccard and character-bigram cosine, then a <b>calibration curve</b> — because independently written descriptions of the same object share only 30–45% of their words, so a raw 40% overlap must read as a strong signal.</p>
+        <p>A second challenge was cross-platform install: a native database module failed to compile on Windows without a C++ toolchain. We fixed it by auto-selecting Node's built-in <code>node:sqlite</code>, so the app installs with no compiler.</p>
+      </div>
+    </div>
+
+    <div class="qa">
+      <div class="q"><span class="num">9</span>Why do you need AI/ML? Could a simpler rule-based approach work?</div>
+      <div class="a">
+        <p>We deliberately <b>didn't</b> reach for heavy ML. Our engine is essentially smart, explainable heuristics — weighted similarity plus perceptual image hashing. A naive exact-name rule fails instantly ("phone" vs "Redmi Note 12 with cracked guard"), so we needed similarity and synonyms, but not a black box.</p>
+        <p>This is a strength for a verification workflow: every score is fully explainable, which a deep model isn't. Sentence-transformer embeddings are a clean upgrade path we can drop in later without changing the API.</p>
+        <span class="tip">"We use the minimum intelligence that solves the problem well and stays explainable — that's the right call when the output gates who gets someone's property back."</span>
+      </div>
+    </div>
+
+    <div class="qa">
+      <div class="q"><span class="num">10</span>What data are you using, where is it from, and how reliable is it?</div>
+      <div class="a">
+        <p>The data is <b>user-generated reports</b> — title, category, description, location, date and an optional photo. No external datasets are required. Its reliability naturally varies by user, which is exactly why we never trust a single field: we combine five independent signals and add a mandatory human verification step. Locations use a controlled vocabulary to stay consistent, and the demo runs on a seeded, realistic campus dataset.</p>
+      </div>
+    </div>
+
+    <!-- ── QUALITY & RISK ── -->
+    <div class="group">Accuracy, robustness &amp; limitations</div>
+
+    <div class="qa">
+      <div class="q"><span class="num">11</span>How do you measure accuracy, performance, or effectiveness?</div>
+      <div class="a">
+        <ul>
+          <li><b>Match quality:</b> the admin analytics track match success rate (confirmed ÷ generated), claim approval rate and average resolution time.</li>
+          <li><b>Verification separation:</b> in testing a genuine owner scores ~<b>89%</b> while an impostor scores ~<b>2%</b> — a wide, usable gap.</li>
+          <li><b>Correctness:</b> a <b>44-assertion end-to-end test</b> drives the whole journey, plus an automated screenshot pass over every screen.</li>
+          <li><b>Real-world:</b> we'd measure the return rate during a campus pilot.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="qa">
+      <div class="q"><span class="num">12</span>What happens with incorrect, unexpected, or malicious input?</div>
+      <div class="a">
+        <ul>
+          <li>Server-side validation on every write: report type, required fields, valid dates, a category whitelist, and file-type/size limits on uploads.</li>
+          <li>Auth required on protected routes (401) and role checks on admin routes (403); you cannot claim your own item.</li>
+          <li>All SQL uses <b>parameterised prepared statements</b>, so injection isn't possible; weak matches below the threshold are hidden; verification answers are compared, never trusted.</li>
+        </ul>
+        <p><span class="honest">Honest gap:</span> we don't have request rate-limiting yet — it's on the production checklist.</p>
+      </div>
+    </div>
+
+    <div class="qa">
+      <div class="q"><span class="num">13</span>What is the biggest limitation or weakness of your current solution?</div>
+      <div class="a">
+        <p>Text matching is similarity-based, not true semantic understanding, so unusual phrasing can under-score — mitigated by the human review step and by re-scanning. Beyond that: notifications poll rather than push in real time, the image hash catches visual similarity but not fine detail, and there's no email verification yet, so accounts are trust-based. All are known, with clear next steps.</p>
+        <span class="tip">"Our biggest limitation is semantic text understanding — and that's exactly why a human always makes the final call before an item changes hands."</span>
+      </div>
+    </div>
+
+    <div class="qa">
+      <div class="q"><span class="num">14</span>What are the biggest security and privacy risks, and how do you address them?</div>
+      <div class="a">
+        <p><b>Risks:</b> someone falsely claiming an item, exposure of users' contact details, and account abuse.</p>
+        <ul>
+          <li>Passwords are <b>bcrypt-hashed</b>; sessions are stateless <b>JWTs</b>.</li>
+          <li>Names and emails are <b>masked</b> in public responses; phone numbers are never sent by the API.</li>
+          <li>Private verification answers are <b>never returned</b> by any endpoint.</li>
+          <li>Identities are revealed <b>only after a claim is approved</b>; access is role-based; SQL is parameterised.</li>
+        </ul>
+        <p><span class="honest">Next:</span> rate limiting, email/college-ID verification, and an audit log.</p>
+      </div>
+    </div>
+
+    <!-- ── SCALE ── -->
+    <div class="group">Scale, dependencies &amp; the road to production</div>
+
+    <div class="qa">
+      <div class="q"><span class="num">15</span>It works for a few users. What about 100,000 or 1 million?</div>
+      <div class="a">
+        <p>The design scales without a rewrite: swap SQLite for <b>PostgreSQL</b> (plain SQL, so it's a driver change), run the <b>stateless API behind a load balancer</b> with horizontal replicas, move uploads to <b>object storage</b> (S3), and cache hot reads. The matching step is the one thing to re-engineer — we'd pre-filter candidates and move scoring to a background worker queue (see Q16).</p>
+      </div>
+    </div>
+
+    <div class="qa">
+      <div class="q"><span class="num">16</span>What is the biggest performance or scalability bottleneck?</div>
+      <div class="a">
+        <p>The matching step: each new report is scored against all open opposite reports. That's fine for a campus, but at massive scale it's the hotspot. The fix is straightforward — <b>pre-filter candidates by category + location + date window</b> using indexes we already have, then run the scoring <b>asynchronously in a worker queue</b> so the user's request returns instantly and matches arrive as notifications.</p>
+      </div>
+    </div>
+
+    <div class="qa">
+      <div class="q"><span class="num">17</span>What if an external API, AI model, or database becomes unavailable?</div>
+      <div class="a">
+        <p>This is a real advantage of our design: <b>TraceBack has no external API or third-party model dependency</b> — image hashing and matching run locally, so there's nothing external to fail. The image library is even optional: if it's missing, image similarity is simply skipped and the other four weights re-normalise, so the app keeps working. If the database is briefly unavailable, the API returns clean error responses instead of crashing.</p>
+        <span class="tip">"There's no external service to go down — our intelligence is self-contained. That's a deployment and reliability win."</span>
+      </div>
+    </div>
+
+    <div class="qa">
+      <div class="q"><span class="num">18</span>What is the gap between your prototype and a production-ready system?</div>
+      <div class="a">
+        <p>The core workflow, data model and matching engine are already production-shaped — the gap is <b>hardening and infrastructure, not logic</b>: email/college-ID verification, rate limiting and abuse protection, PostgreSQL + object storage, WebSocket real-time push, monitoring and logging, automated CI, and a mobile app.</p>
+      </div>
+    </div>
+
+    <div class="qa">
+      <div class="q"><span class="num">19</span>If you had one more month, what would you improve first and why?</div>
+      <div class="a">
+        <p><b>Real-time notifications (WebSockets) and a mobile-first PWA</b> — because adoption depends on instant alerts and phone-first use. Then <b>map-based location matching</b> (haversine distance on coordinates) to sharpen the strongest signal, and a <b>one-campus pilot</b> to gather real return-rate data to guide everything after.</p>
+      </div>
+    </div>
+
+    <div class="qa">
+      <div class="q"><span class="num">20</span>Why should the judges choose your solution over the others?</div>
+      <div class="a">
+        <p>Because it's a <b>complete, working, end-to-end system</b> — not a mockup — verified by 44 automated checks. It solves a <b>real, universal problem</b> with an <b>explainable</b> matching engine, <b>genuine</b> image similarity, and a <b>privacy-first verification flow that actually prevents false claims</b>. It runs anywhere with zero setup and <b>no paid dependencies</b>, the architecture scales cleanly, and it's polished across 23 screens — and we're honest about exactly where its limits are.</p>
+        <span class="tip">"It works today, it's explainable, it protects users, and it costs nothing to run — a solution you could pilot on this campus next week."</span>
+      </div>
+    </div>
+
+    <footer>
+      <span>TraceBack — Lost &amp; Found Item Tracker · Judge Q&amp;A preparation</span>
+      <span>Node.js · Express · SQLite · React · Vite</span>
+    </footer>
+  </body>
+</html>
